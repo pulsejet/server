@@ -816,7 +816,7 @@ Raw output
 			return true;
 		}
 
-		$tempPath = ini_get('upload_tmp_dir') ? ini_get('upload_tmp_dir') : sys_get_temp_dir();
+		$tempPath = sys_get_temp_dir();
 		if (!is_dir($tempPath)) {
 			$this->logger->error('Error while checking the temporary PHP path - it was not properly set to a directory. value: ' . $tempPath);
 			return false;
