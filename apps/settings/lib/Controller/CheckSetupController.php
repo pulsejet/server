@@ -818,7 +818,7 @@ Raw output
 
 		$tempPath = sys_get_temp_dir();
 		if (!is_dir($tempPath)) {
-			$this->logger->error('Error while checking the temporary PHP path - it was not properly set to a directory. Retunred value: ' . $tempPath);
+			$this->logger->error('Error while checking the temporary PHP path - it was not properly set to a directory. Returned value: ' . $tempPath);
 			return false;
 		}
 		$freeSpaceInTemp = function_exists('disk_free_space') ? disk_free_space($tempPath) : false;
