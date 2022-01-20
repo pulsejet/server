@@ -818,12 +818,12 @@ Raw output
 
 		$tempPath = sys_get_temp_dir();
 		if (!is_dir($tempPath)) {
-			$this->logger->error('Error while checking the temporary PHP path - it was not properly set to a directory. value: ' . $tempPath);
+			$this->logger->error('Error while checking the temporary PHP path - it was not properly set to a directory. Retunred value: ' . $tempPath);
 			return false;
 		}
 		$freeSpaceInTemp = function_exists('disk_free_space') ? disk_free_space($tempPath) : false;
 		if ($freeSpaceInTemp === false) {
-			$this->logger->error('Error while checking the available disk space of temporary PHP path - no free disk space returned. Temporary path: ' . $tempPath);
+			$this->logger->error('Error while checking the available disk space of temporary PHP path or no free disk space returned. Temporary path: ' . $tempPath);
 			return false;
 		}
 
