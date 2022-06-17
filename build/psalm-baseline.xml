@@ -3317,16 +3317,6 @@
       <code>is_null($this-&gt;getContent())</code>
     </TypeDoesNotContainNull>
   </file>
-  <file src="lib/private/Group/Database.php">
-    <InvalidArrayOffset occurrences="1">
-      <code>$this-&gt;groupCache[$gid]['displayname']</code>
-    </InvalidArrayOffset>
-    <InvalidPropertyAssignmentValue occurrences="3">
-      <code>$this-&gt;groupCache</code>
-      <code>$this-&gt;groupCache</code>
-      <code>$this-&gt;groupCache</code>
-    </InvalidPropertyAssignmentValue>
-  </file>
   <file src="lib/private/Group/Group.php">
     <InvalidArgument occurrences="7">
       <code>IGroup::class . '::postAddUser'</code>

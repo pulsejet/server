@@ -30,7 +30,9 @@ namespace OCA\User_LDAP;
 
 use OCP\Group\Backend\IDeleteGroupBackend;
 use OCP\Group\Backend\IGetDisplayNameBackend;
+use OCP\Group\Backend\IGroupDetailsBackend;
 use OCP\Group\Backend\INamedBackend;
+use OCP\GroupInterface;
 
 class Group_Proxy extends Proxy implements \OCP\GroupInterface, IGroupLDAP, IGetDisplayNameBackend, INamedBackend, IDeleteGroupBackend {
 	private $backends = [];
@@ -230,6 +232,21 @@ class Group_Proxy extends Proxy implements \OCP\GroupInterface, IGroupLDAP, IGet
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function getGroupsDetails(array $gids): array {
+		if (!($this instanceof IGroupDetailsBackend || $this->implementsActions(GroupInterface::GROUP_DETAILS))) {
+			throw new \Exception("Should not have been called");
+		}
+
+		$groupData = [];
+		foreach ($gids as $gid) {
+			$groupData[$gid] = $this->handleRequest($gid, 'getGroupDetails', [$gid]);
+		}
+		return $groupData;
+	}
+
+	/**
 	 * get a list of all groups
 	 *
 	 * @return string[] with group names
@@ -257,6 +274,20 @@ class Group_Proxy extends Proxy implements \OCP\GroupInterface, IGroupLDAP, IGet
 	 */
 	public function groupExists($gid) {
 		return $this->handleRequest($gid, 'groupExists', [$gid]);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function groupsExists(array $gids): array {
+		$existingGroups = [];
+		foreach ($gids as $gid) {
+			$exists = $this->handleRequest($gid, 'groupExists', [$gid]);
+			if ($exists) {
+				$existingGroups[] = $gid;
+			}
+		}
+		return $existingGroups;
 	}
 
 	/**

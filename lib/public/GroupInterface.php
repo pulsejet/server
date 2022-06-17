@@ -87,7 +87,8 @@ interface GroupInterface {
 	public function getUserGroups($uid);
 
 	/**
-	 * get a list of all groups
+	 * @brief Get a list of all groups
+	 *
 	 * @param string $search
 	 * @param int $limit
 	 * @param int $offset
@@ -99,7 +100,8 @@ interface GroupInterface {
 	public function getGroups($search = '', $limit = -1, $offset = 0);
 
 	/**
-	 * check if a group exists
+	 * @brief Check if a group exists
+	 *
 	 * @param string $gid
 	 * @return bool
 	 * @since 4.5.0
@@ -107,7 +109,21 @@ interface GroupInterface {
 	public function groupExists($gid);
 
 	/**
-	 * get a list of all users in a group
+	 * @brief Batch method to check if a list of groups exists
+	 *
+	 * The default implementation in ABackend will just call groupExists in
+	 * a loop. But a GroupBackend implementation should provides a more optimized
+	 * override this method to provide a more optimized way to execute this operation.
+	 *
+	 * @param list<string> $gids
+	 * @return list<string> the list of group that exists
+	 * @since 25.0.0
+	 */
+	public function groupsExists(array $gids): array;
+
+	/**
+	 * Get a list of all users in a group
+	 *
 	 * @param string $gid
 	 * @param string $search
 	 * @param int $limit

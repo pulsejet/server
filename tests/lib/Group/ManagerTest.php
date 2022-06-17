@@ -83,6 +83,7 @@ class ManagerTest extends TestCase {
 				'inGroup',
 				'getGroups',
 				'groupExists',
+				'groupsExists',
 				'usersInGroup',
 				'createGroup',
 				'addToGroup',
