@@ -386,4 +386,23 @@ class JobList implements IJobList {
 			->where($query->expr()->eq('id', $query->createNamedParameter($job->getId()), IQueryBuilder::PARAM_INT));
 		$query->executeStatement();
 	}
+
+	public function countByClass(): array {
+		$query = $this->connection->getQueryBuilder();
+		$query->select('class')
+			->selectAlias($query->func()->count('id'), 'count')
+			->from('jobs')
+			->orderBy('count')
+			->groupBy('class');
+
+		$result = $query->executeQuery();
+
+		$jobs = [];
+		while ($row = $result->fetch()) {
+			$jobs[] = $row;
+		}
+
+		return $jobs;
+
+	}
 }
