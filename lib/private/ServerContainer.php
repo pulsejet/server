@@ -30,6 +30,7 @@ use OC\AppFramework\App;
 use OC\AppFramework\DependencyInjection\DIContainer;
 use OC\AppFramework\Utility\SimpleContainer;
 use OCP\AppFramework\QueryException;
+use Psr\Container\ContainerExceptionInterface;
 use function explode;
 use function strtolower;
 
@@ -127,6 +128,13 @@ class ServerContainer extends SimpleContainer {
 	}
 
 	/**
+	 * @template T
+	 * @param class-string<T>|string $name
+	 * @return T|mixed
+	 * @psalm-template S as class-string<T>|string
+	 * @psalm-param S $name
+	 * @psalm-return (S is class-string<T> ? T : mixed)
+	 * @throws QueryException
 	 * @deprecated 20.0.0 use \Psr\Container\ContainerInterface::get
 	 */
 	public function query(string $name, bool $autoload = true) {
