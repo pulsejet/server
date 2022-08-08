@@ -52,6 +52,7 @@ use OCP\IRequest;
 use OCP\IRequestId;
 use OCP\Security\ICrypto;
 use Symfony\Component\HttpFoundation\IpUtils;
+use function OCP\Log\logger;
 
 /**
  * Class for accessing variables in the request.
@@ -466,6 +467,7 @@ class Request implements \ArrayAccess, \Countable, IRequest {
 		}
 
 		if (!$this->passesStrictCookieCheck()) {
+			logger('csrf')->error('doesnt pass stict cookie check');
 			return false;
 		}
 
@@ -477,9 +479,11 @@ class Request implements \ArrayAccess, \Countable, IRequest {
 			$token = $this->items['server']['HTTP_REQUESTTOKEN'];
 		} else {
 			//no token found.
+			logger('csrf')->error('No token found');
 			return false;
 		}
 		$token = new CsrfToken($token);
+		logger('csrf')->error('isValidToken');
 
 		return $this->csrfTokenManager->isTokenValid($token);
 	}

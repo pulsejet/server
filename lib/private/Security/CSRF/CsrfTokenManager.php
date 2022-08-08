@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace OC\Security\CSRF;
 
 use OC\Security\CSRF\TokenStorage\SessionStorage;
+use function OCP\Log\logger;
 
 /**
  * Class CsrfTokenManager is the manager for all CSRF token related activities.
@@ -100,8 +101,11 @@ class CsrfTokenManager {
 	 */
 	public function isTokenValid(CsrfToken $token): bool {
 		if (!$this->sessionStorage->hasToken()) {
+			logger('csrf')->error('hasToken is false');
 			return false;
 		}
+
+		logger('csrf')->error('isValidToken ' . $this->sessionStorage->getToken() . ' ' . $token->getDecryptedValue() );
 
 		return hash_equals(
 			$this->sessionStorage->getToken(),
