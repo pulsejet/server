@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace OC\Security\CSRF\TokenStorage;
 
 use OCP\ISession;
+use function OCP\Log\logger;
 
 /**
  * Class SessionStorage provides the session storage
@@ -73,6 +74,7 @@ class SessionStorage {
 	 * @param string $value
 	 */
 	public function setToken(string $value) {
+		logger('csrf')->error('CSRF setToken ' . $value);
 		$this->session->set('requesttoken', $value);
 	}
 
