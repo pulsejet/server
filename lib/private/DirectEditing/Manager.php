@@ -180,9 +180,9 @@ class Manager implements IManager {
 				throw new \RuntimeException('Token has already been used and can only be used for followup requests');
 			}
 			$editor = $this->getEditor($tokenObject->getEditor());
-			//$this->accessToken($token);
+			$this->accessToken($token);
 		} catch (Throwable $throwable) {
-			//$this->invalidateToken($token);
+			$this->invalidateToken($token);
 			return new NotFoundResponse();
 		}
 		return $editor->open($tokenObject);

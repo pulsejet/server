@@ -74,7 +74,7 @@ class SessionStorage {
 	 * @param string $value
 	 */
 	public function setToken(string $value) {
-		logger('csrf')->error('CSRF setToken ' . $value);
+		logger()->error('CSRF setToken ' . $value);
 		$this->session->set('requesttoken', $value);
 	}
 
