@@ -542,11 +542,7 @@ class OC_Helper {
 		}
 
 		$ownerId = $storage->getOwner($path);
-		$ownerDisplayName = '';
-		$owner = \OC::$server->getUserManager()->get($ownerId);
-		if ($owner) {
-			$ownerDisplayName = $owner->getDisplayName();
-		}
+		$ownerDisplayName = \OC::$server->getUserManager()->getDisplayName($ownerId) ?? '';
 		if (substr_count($mount->getMountPoint(), '/') < 3) {
 			$mountPoint = '';
 		} else {
