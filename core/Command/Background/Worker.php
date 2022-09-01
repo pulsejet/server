@@ -77,7 +77,9 @@ class Worker extends Command {
 				foreach ($executedJobs as $id => $time) {
 					unset($executedJobs[$id]);
 					$job = $this->jobList->getById($id);
-					$this->jobList->unlockJob($job);
+					if ($job !== null) {
+						$this->jobList->unlockJob($job);
+					}
 				}
 				$output->writeln('<error>Killed');
 				exit(1);
@@ -109,8 +111,14 @@ class Worker extends Command {
 				if ($time < time() - self::DEFAULT_INTERVAL) {
 					unset($executedJobs[$id]);
 					$job = $this->jobList->getById($id);
-					$this->jobList->unlockJob($job);
+					if ($job !== null) {
+						$this->jobList->unlockJob($job);
+					}
 				}
+			}
+
+			if ($input->getOption('once')) {
+				break;
 			}
 
 			$job = $this->jobList->getNext(false, $jobClass);
@@ -149,7 +157,9 @@ class Worker extends Command {
 		foreach ($executedJobs as $id => $time) {
 			unset($executedJobs[$id]);
 			$job = $this->jobList->getById($id);
-			$this->jobList->unlockJob($job);
+			if ($job !== null) {
+				$this->jobList->unlockJob($job);
+			}
 		}
 
 		return 0;
