@@ -133,9 +133,10 @@ class FileReferenceProvider implements IReferenceProvider {
 				'id' => $file->getId(),
 				'name' => $file->getName(),
 				'size' => $file->getSize(),
-				'path' => $file->getPath(),
+				'path' => $userFolder->getRelativePath($file->getPath()),
 				'link' => $reference->getUrl(),
 				'mimetype' => $file->getMimetype(),
+				'mtime' => $file->getMTime(),
 				'preview-available' => $this->previewManager->isAvailable($file)
 			]);
 		} catch (InvalidPathException|NotFoundException|NotPermittedException|NoUserException $e) {

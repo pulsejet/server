@@ -47,6 +47,7 @@ return array(
     'OCA\\Files\\Helper' => $baseDir . '/../lib/Helper.php',
     'OCA\\Files\\Listener\\LegacyLoadAdditionalScriptsAdapter' => $baseDir . '/../lib/Listener/LegacyLoadAdditionalScriptsAdapter.php',
     'OCA\\Files\\Listener\\LoadSidebarListener' => $baseDir . '/../lib/Listener/LoadSidebarListener.php',
+    'OCA\\Files\\Listener\\RenderReferenceEventListener' => $baseDir . '/../lib/Listener/RenderReferenceEventListener.php',
     'OCA\\Files\\Migration\\Version11301Date20191205150729' => $baseDir . '/../lib/Migration/Version11301Date20191205150729.php',
     'OCA\\Files\\Notification\\Notifier' => $baseDir . '/../lib/Notification/Notifier.php',
     'OCA\\Files\\Search\\FilesSearchProvider' => $baseDir . '/../lib/Search/FilesSearchProvider.php',
