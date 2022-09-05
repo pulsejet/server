@@ -38,7 +38,7 @@ class Worker extends Command {
 	protected IJobList $jobList;
 	protected LoggerInterface $logger;
 
-	const DEFAULT_INTERVAL = 5;
+	public const DEFAULT_INTERVAL = 5;
 
 	public function __construct(IJobList $jobList,
 								LoggerInterface $logger) {
@@ -71,7 +71,7 @@ class Worker extends Command {
 		$executedJobs = [];
 
 		$ended = false;
-		pcntl_signal(SIGINT, function () use (&$ended, $output, $executedJobs) {
+		pcntl_signal(SIGINT, function () use (&$ended, $output, &$executedJobs) {
 			$output->writeln('SIGINT');
 			if ($ended) {
 				foreach ($executedJobs as $id => $time) {
@@ -94,7 +94,7 @@ class Worker extends Command {
 			}
 			$count = 0;
 			$total = 0;
-			foreach($this->jobList->countByClass() as $row) {
+			foreach ($this->jobList->countByClass() as $row) {
 				if ((int)$row['count'] === 1) {
 					$count++;
 				} else {

@@ -205,7 +205,7 @@ class JobList implements IJobList {
 	/**
 	 * get the next job in the list
 	 */
-	public function getNext(bool $onlyTimeSensitive = false, string $jobClass = null): ?IJob {
+	public function getNext(bool $onlyTimeSensitive = false, ?string $jobClass = null): ?IJob {
 		$query = $this->connection->getQueryBuilder();
 		$query->select('*')
 			->from('jobs')
@@ -403,6 +403,5 @@ class JobList implements IJobList {
 		}
 
 		return $jobs;
-
 	}
 }

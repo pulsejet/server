@@ -99,7 +99,7 @@ interface IJobList {
 	 *
 	 * @since 7.0.0 - In 24.0.0 parameter $onlyTimeSensitive got added
 	 */
-	public function getNext(bool $onlyTimeSensitive = false): ?IJob;
+	public function getNext(bool $onlyTimeSensitive = false, ?string $jobClass = null): ?IJob;
 
 	/**
 	 * @since 7.0.0
@@ -145,4 +145,12 @@ interface IJobList {
 	 * @since 23.0.0
 	 */
 	public function resetBackgroundJob(IJob $job): void;
+
+	/**
+	 * Count the number of job by class name
+	 *
+	 * @array{class-string<IJob>, int}
+	 * @since 25.0.0
+	 */
+	public function countByClass(): array;
 }
