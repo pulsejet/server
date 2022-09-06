@@ -88,27 +88,22 @@
 				<!-- expiration date -->
 				<NcActionCheckbox :checked.sync="hasExpirationDate"
 					:disabled="config.isDefaultInternalExpireDateEnforced || saving"
-					@uncheck="onExpirationDisable">
+					@uncheck="uncheckExpirationDate">
 					{{ config.isDefaultInternalExpireDateEnforced
 						? t('files_sharing', 'Expiration date enforced')
 						: t('files_sharing', 'Set expiration date') }}
 				</NcActionCheckbox>
 				<NcActionInput v-if="hasExpirationDate"
 					ref="expireDate"
-					v-tooltip.auto="{
-						content: errors.expireDate,
-						show: errors.expireDate,
-						trigger: 'manual'
-					}"
+					:is-native-picker="true"
+					:hide-label="true"
 					:class="{ error: errors.expireDate}"
 					:disabled="saving"
-					:lang="lang"
-					:value="share.expireDate"
-					value-type="format"
-					icon="icon-calendar-dark"
+					:value="expireDate"
 					type="date"
-					:disabled-date="disabledDate"
-					@update:value="onExpirationChange">
+					:min="dateTomorrow"
+					:max="dateMaxEnforced"
+					@input="onExpirationChange">
 					{{ t('files_sharing', 'Enter a date') }}
 				</NcActionInput>
 
@@ -181,6 +176,7 @@ export default {
 			permissionsDelete: OC.PERMISSION_DELETE,
 			permissionsRead: OC.PERMISSION_READ,
 			permissionsShare: OC.PERMISSION_SHARE,
+			isFirstInitOfExpireDate: true,
 		}
 	},
 
@@ -380,9 +376,9 @@ export default {
 			},
 			set(enabled) {
 				this.share.expireDate = enabled
-					? this.config.defaultInternalExpirationDateString !== ''
-						? this.config.defaultInternalExpirationDateString
-						: moment().format('YYYY-MM-DD')
+					? this.config.defaultInternalExpirationDate !== ''
+						? this.config.defaultInternalExpirationDate
+						: new Date()
 					: ''
 			},
 		},
@@ -390,10 +386,10 @@ export default {
 		dateMaxEnforced() {
 			if (!this.isRemote) {
 				return this.config.isDefaultInternalExpireDateEnforced
-					&& moment().add(1 + this.config.defaultInternalExpireDate, 'days')
+					&& new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultInternalExpireDate))
 			} else {
 				return this.config.isDefaultRemoteExpireDateEnforced
-					&& moment().add(1 + this.config.defaultRemoteExpireDate, 'days')
+					&& new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultRemoteExpireDate))
 			}
 		},
 
@@ -434,6 +430,20 @@ export default {
 
 			return this.isFolder || allowedMimetypes.includes(this.fileInfo.mimetype)
 		},
+
+		/**
+		 * Compute value for expiration input field
+		 * @return {Date}
+		 */
+		expireDate() {
+			if (this.isFirstInitOfExpireDate) {
+				// initial value needs to be set to one day after share.expireDate because the min value of input is dateTomorrow
+				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
+				this.isFirstInitOfExpireDate = false
+				return new Date(new Date().setDate(this.share.expireDate.getDate() + 1))
+			}
+			return this.share.expireDate
+		},
 	},
 
 	methods: {
@@ -464,6 +474,14 @@ export default {
 		 */
 		onMenuClose() {
 			this.onNoteSubmit()
+		},
+
+		/**
+		 * Process unchecking of checkbox for expiration date
+		 */
+		uncheckExpirationDate() {
+			this.isFirstInitOfExpireDate = true
+			return this.onExpirationDisable()
 		},
 	},
 }

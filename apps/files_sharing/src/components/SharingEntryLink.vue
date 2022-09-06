@@ -98,20 +98,13 @@
 			</NcActionText>
 			<NcActionInput v-if="pendingExpirationDate"
 				v-model="share.expireDate"
-				v-tooltip.auto="{
-					content: errors.expireDate,
-					show: errors.expireDate,
-					trigger: 'manual',
-					defaultContainer: '#app-sidebar'
-				}"
 				class="share-link-expire-date"
 				:disabled="saving"
-
-				:lang="lang"
-				icon=""
+			    :is-native-picker="true"
+				:hide-label="true"
 				type="date"
-				value-type="format"
-				:disabled-date="disabledDate">
+				:min="dateTomorrow"
+				:max="dateMaxEnforced">
 				<!-- let's not submit when picked, the user
 					might want to still edit or copy the password -->
 				{{ t('files_sharing', 'Enter a date') }}
@@ -213,29 +206,23 @@
 					<NcActionCheckbox :checked.sync="hasExpirationDate"
 						:disabled="config.isDefaultExpireDateEnforced || saving"
 						class="share-link-expire-date-checkbox"
-						@uncheck="onExpirationDisable">
+						@uncheck="uncheckExpirationDate">
 						{{ config.isDefaultExpireDateEnforced
 							? t('files_sharing', 'Expiration date (enforced)')
 							: t('files_sharing', 'Set expiration date') }}
 					</NcActionCheckbox>
 					<NcActionInput v-if="hasExpirationDate"
 						ref="expireDate"
-						v-tooltip.auto="{
-							content: errors.expireDate,
-							show: errors.expireDate,
-							trigger: 'manual',
-							defaultContainer: '#app-sidebar'
-						}"
+						:is-native-picker="true"
+						:hide-label="true"
 						class="share-link-expire-date"
 						:class="{ error: errors.expireDate}"
 						:disabled="saving"
-						:lang="lang"
-						:value="share.expireDate"
-						value-type="format"
-						icon="icon-calendar-dark"
+						:value="expireDate"
 						type="date"
-						:disabled-date="disabledDate"
-						@update:value="onExpirationChange">
+						:min="dateTomorrow"
+						:max="dateMaxEnforced"
+						@input="onExpirationChange">
 						{{ t('files_sharing', 'Enter a date') }}
 					</NcActionInput>
 
@@ -371,6 +358,7 @@ export default {
 
 			ExternalLegacyLinkActions: OCA.Sharing.ExternalLinkActions.state,
 			ExternalShareActions: OCA.Sharing.ExternalShareActions.state,
+			isFirstInitOfExpireDate: true,
 		}
 	},
 
@@ -435,12 +423,12 @@ export default {
 					|| !!this.share.expireDate
 			},
 			set(enabled) {
-				let dateString = moment(this.config.defaultExpirationDateString)
-				if (!dateString.isValid()) {
-					dateString = moment()
+				let defaultExpirationDate = this.config.defaultExpirationDate
+				if (!defaultExpirationDate) {
+					defaultExpirationDate = new Date()
 				}
 				this.share.state.expiration = enabled
-					? dateString.format('YYYY-MM-DD')
+					? defaultExpirationDate
 					: ''
 				console.debug('Expiration date status', enabled, this.share.expireDate)
 			},
@@ -448,7 +436,7 @@ export default {
 
 		dateMaxEnforced() {
 			return this.config.isDefaultExpireDateEnforced
-				&& moment().add(1 + this.config.defaultExpireDate, 'days')
+				&& new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultExpireDate))
 		},
 
 		/**
@@ -613,6 +601,20 @@ export default {
 
 			return this.fileInfo.shareAttributes.some(hasDisabledDownload)
 		},
+
+		/**
+		 * Compute value for expiration input field
+		 * @return {Date}
+		 */
+		expireDate() {
+			if (this.isFirstInitOfExpireDate) {
+				// initial value needs to be set to one day after share.expireDate because the min value of input is dateTomorrow
+				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
+				this.isFirstInitOfExpireDate = false
+				return new Date(new Date().setDate(this.share.expireDate.getDate() + 1))
+			}
+			return this.share.expireDate
+		},
 	},
 
 	methods: {
@@ -631,7 +633,7 @@ export default {
 			if (this.config.isDefaultExpireDateEnforced) {
 				// default is empty string if not set
 				// expiration is the share object key, not expireDate
-				shareDefaults.expiration = this.config.defaultExpirationDateString
+				shareDefaults.expiration = this.config.defaultExpirationDate
 			}
 			if (this.config.enableLinkPasswordByDefault) {
 				shareDefaults.password = await GeneratePassword()
@@ -872,6 +874,14 @@ export default {
 			// but is incomplete as not pushed to server
 			// YET. We can safely delete the share :)
 			this.$emit('remove:share', this.share)
+		},
+
+		/**
+		 * Process unchecking of checkbox for expiration date
+		 */
+		uncheckExpirationDate() {
+			this.isFirstInitOfExpireDate = true
+			return this.onExpirationDisable()
 		},
 	},
 }

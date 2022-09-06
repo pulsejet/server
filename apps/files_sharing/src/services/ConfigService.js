@@ -60,57 +60,37 @@ export default class Config {
 	}
 
 	/**
-	 * Get the default link share expiration date as string
+	 * Get the default link share expiration date
 	 *
-	 * @return {string}
+	 * @return {Date||string}
 	 * @readonly
 	 * @memberof Config
 	 */
-	get defaultExpirationDateString() {
-		let expireDateString = ''
-		if (this.isDefaultExpireDateEnabled) {
-			const date = window.moment.utc()
-			const expireAfterDays = this.defaultExpireDate
-			date.add(expireAfterDays, 'days')
-			expireDateString = date.format('YYYY-MM-DD')
-		}
-		return expireDateString
+	get defaultExpirationDate() {
+		return this.isDefaultExpireDateEnabled ? new Date(new Date().setDate(new Date().getDate() + this.defaultExpireDate)) : ''
 	}
 
 	/**
-	 * Get the default internal expiration date as string
+	 * Get the default internal expiration date
 	 *
-	 * @return {string}
+	 * @return {Date||string}
 	 * @readonly
 	 * @memberof Config
 	 */
-	get defaultInternalExpirationDateString() {
-		let expireDateString = ''
-		if (this.isDefaultInternalExpireDateEnabled) {
-			const date = window.moment.utc()
-			const expireAfterDays = this.defaultInternalExpireDate
-			date.add(expireAfterDays, 'days')
-			expireDateString = date.format('YYYY-MM-DD')
-		}
-		return expireDateString
+	get defaultInternalExpirationDate() {
+		return this.isDefaultInternalExpireDateEnabled ? new Date(new Date().setDate(new Date().getDate() + this.defaultInternalExpireDate)) : ''
 	}
 
 	/**
-	 * Get the default remote expiration date as string
+	 * Get the default remote expiration date
 	 *
-	 * @return {string}
+	 * @return {Date||string}
 	 * @readonly
 	 * @memberof Config
 	 */
-	get defaultRemoteExpirationDateString() {
-		let expireDateString = ''
-		if (this.isDefaultRemoteExpireDateEnabled) {
-			const date = window.moment.utc()
-			const expireAfterDays = this.defaultRemoteExpireDate
-			date.add(expireAfterDays, 'days')
-			expireDateString = date.format('YYYY-MM-DD')
-		}
-		return expireDateString
+	//todo: no usages
+	get defaultRemoteExpirationDate() {
+		return this.isDefaultRemoteExpireDateEnabled ? new Date(new Date().setDate(new Date().getDate() + this.defaultRemoteExpireDate)) : ''
 	}
 
 	/**
@@ -188,6 +168,17 @@ export default class Config {
 	 */
 	get isDefaultInternalExpireDateEnabled() {
 		return OC.appConfig.core.defaultInternalExpireDateEnabled === true
+	}
+
+	/**
+	 * Is there a default expiration date for new remote shares ?
+	 *
+	 * @return {boolean}
+	 * @readonly
+	 * @memberof Config
+	 */
+	get isDefaultRemoteExpireDateEnabled() {
+		return OC.appConfig.core.defaultRemoteExpireDateEnabled === true
 	}
 
 	/**
