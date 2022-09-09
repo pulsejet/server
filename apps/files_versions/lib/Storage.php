@@ -204,6 +204,14 @@ class Storage {
 			}
 		}
 
+		/** @var IUserManager $userManager */
+		$userManager = \OC::$server->get(IUserManager::class);
+		$user = $userManager->get($uid);
+
+		if (!$user) {
+			return false;
+		}
+
 		// no use making versions for empty files
 		if ($fileInfo->getSize() === 0) {
 			return false;
