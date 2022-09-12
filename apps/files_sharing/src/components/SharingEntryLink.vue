@@ -206,7 +206,7 @@
 					<NcActionCheckbox :checked.sync="hasExpirationDate"
 						:disabled="config.isDefaultExpireDateEnforced || saving"
 						class="share-link-expire-date-checkbox"
-						@uncheck="uncheckExpirationDate">
+						@uncheck="onExpirationDisable">
 						{{ config.isDefaultExpireDateEnforced
 							? t('files_sharing', 'Expiration date (enforced)')
 							: t('files_sharing', 'Set expiration date') }}
@@ -218,7 +218,7 @@
 						class="share-link-expire-date"
 						:class="{ error: errors.expireDate}"
 						:disabled="saving"
-						:value="expireDate"
+						:value="share.expireDate"
 						type="date"
 						:min="dateTomorrow"
 						:max="dateMaxEnforced"
@@ -358,7 +358,6 @@ export default {
 
 			ExternalLegacyLinkActions: OCA.Sharing.ExternalLinkActions.state,
 			ExternalShareActions: OCA.Sharing.ExternalShareActions.state,
-			isFirstInitOfExpireDate: true,
 		}
 	},
 
@@ -435,8 +434,10 @@ export default {
 		},
 
 		dateMaxEnforced() {
-			return this.config.isDefaultExpireDateEnforced
-				&& new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultExpireDate))
+			if (this.config.isDefaultExpireDateEnforced) {
+				return new Date(new Date().setDate(new Date().getDate() + 1 + this.config.defaultExpireDate))
+			}
+			return null
 		},
 
 		/**
@@ -600,20 +601,6 @@ export default {
 			const hasDisabledDownload = (shareAttribute) => shareAttribute.key === 'download' && shareAttribute.scope === 'permissions' && shareAttribute.enabled === false
 
 			return this.fileInfo.shareAttributes.some(hasDisabledDownload)
-		},
-
-		/**
-		 * Compute value for expiration input field
-		 * @return {Date}
-		 */
-		expireDate() {
-			if (this.isFirstInitOfExpireDate) {
-				// initial value needs to be set to one day after share.expireDate because the min value of input is dateTomorrow
-				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
-				this.isFirstInitOfExpireDate = false
-				return new Date(new Date().setDate(this.share.expireDate.getDate() + 1))
-			}
-			return this.share.expireDate
 		},
 	},
 
@@ -874,14 +861,6 @@ export default {
 			// but is incomplete as not pushed to server
 			// YET. We can safely delete the share :)
 			this.$emit('remove:share', this.share)
-		},
-
-		/**
-		 * Process unchecking of checkbox for expiration date
-		 */
-		uncheckExpirationDate() {
-			this.isFirstInitOfExpireDate = true
-			return this.onExpirationDisable()
 		},
 	},
 }

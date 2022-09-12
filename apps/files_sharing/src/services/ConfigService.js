@@ -62,35 +62,43 @@ export default class Config {
 	/**
 	 * Get the default link share expiration date
 	 *
-	 * @return {Date||string}
+	 * @return {Date|null}
 	 * @readonly
 	 * @memberof Config
 	 */
 	get defaultExpirationDate() {
-		return this.isDefaultExpireDateEnabled ? new Date(new Date().setDate(new Date().getDate() + this.defaultExpireDate)) : ''
+		if (this.isDefaultExpireDateEnabled) {
+			return new Date(new Date().setDate(new Date().getDate() + this.defaultExpireDate))
+		}
+		return null
 	}
 
 	/**
 	 * Get the default internal expiration date
 	 *
-	 * @return {Date||string}
+	 * @return {Date|null}
 	 * @readonly
 	 * @memberof Config
 	 */
 	get defaultInternalExpirationDate() {
-		return this.isDefaultInternalExpireDateEnabled ? new Date(new Date().setDate(new Date().getDate() + this.defaultInternalExpireDate)) : ''
+		if (this.isDefaultInternalExpireDateEnabled) {
+			return new Date(new Date().setDate(new Date().getDate() + this.defaultInternalExpireDate))
+		}
+		return null
 	}
 
 	/**
 	 * Get the default remote expiration date
 	 *
-	 * @return {Date||string}
+	 * @return {Date|null}
 	 * @readonly
 	 * @memberof Config
 	 */
-	//todo: no usages
-	get defaultRemoteExpirationDate() {
-		return this.isDefaultRemoteExpireDateEnabled ? new Date(new Date().setDate(new Date().getDate() + this.defaultRemoteExpireDate)) : ''
+	get defaultRemoteExpirationDateString() {
+		if (this.isDefaultRemoteExpireDateEnabled) {
+			return new Date(new Date().setDate(new Date().getDate() + this.defaultRemoteExpireDate))
+		}
+		return null
 	}
 
 	/**
