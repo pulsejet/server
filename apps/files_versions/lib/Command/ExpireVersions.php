@@ -62,11 +62,11 @@ class ExpireVersions extends Command {
 	protected function configure() {
 		$this
 			->setName('versions:expire')
-			->setDescription('Expires the users file versions')
+			->setDescription('Expires the account\'s file versions')
 			->addArgument(
 				'user_id',
 				InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
-				'expire file versions of the given user(s), if no user is given file versions for all users will be expired.'
+				'expire file versions of the given account(s), if no account is given file versions for all accounts will be expired.'
 			);
 	}
 
@@ -85,7 +85,7 @@ class ExpireVersions extends Command {
 					$userObject = $this->userManager->get($user);
 					$this->expireVersionsForUser($userObject);
 				} else {
-					$output->writeln("<error>Unknown user $user</error>");
+					$output->writeln("<error>Unknown account $user</error>");
 					return 1;
 				}
 			}

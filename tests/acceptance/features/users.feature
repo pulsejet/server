@@ -28,8 +28,8 @@ Feature: users
     And I open the User settings
     And I see that the list of users contains the user user0
     And I open the actions menu for the user user0
-    And I see that the "Delete user" action in the user0 actions menu is shown
-    When I click the "Delete user" action in the user0 actions menu
+    And I see that the "Delete account" action in the user0 actions menu is shown
+    When I click the "Delete account" action in the user0 actions menu
     And I click the "Delete user0's account" button of the confirmation dialog
     Then I see that the list of users does not contains the user user0
 
@@ -39,25 +39,25 @@ Feature: users
     And I open the User settings
     And I see that the list of users contains the user user0
     And I open the actions menu for the user user0
-    And I see that the "Disable user" action in the user0 actions menu is shown
-    When I click the "Disable user" action in the user0 actions menu
+    And I see that the "Disable account" action in the user0 actions menu is shown
+    When I click the "Disable account" action in the user0 actions menu
     Then I see that the list of users does not contains the user user0
-    When I open the "Disabled users" section
+    When I open the "Disabled accounts" section
     Then I see that the list of users contains the user user0
 
   Scenario: users navigation without disabled users
     Given I act as Jane
     And I am logged in as the admin
     And I open the User settings
-    And I open the "Disabled users" section
+    And I open the "Disabled accounts" section
     And I see that the list of users contains the user disabledUser
     And I open the actions menu for the user disabledUser
-    And I see that the "Enable user" action in the disabledUser actions menu is shown
-    When I click the "Enable user" action in the disabledUser actions menu
-    Then I see that the section "Disabled users" is not shown
+    And I see that the "Enable account" action in the disabledUser actions menu is shown
+    When I click the "Enable account" action in the disabledUser actions menu
+    Then I see that the section "Disabled accounts" is not shown
     # check again after reloading the settings
     When I open the User settings
-    Then I see that the section "Disabled users" is not shown
+    Then I see that the section "Disabled accounts" is not shown
 
   Scenario: assign user to a group
     Given I act as Jane
@@ -114,7 +114,7 @@ Feature: users
     When I toggle the showStoragePath checkbox in the settings
     Then I see that the "Storage location" column is shown
     When I toggle the showUserBackend checkbox in the settings
-    Then I see that the "User backend" column is shown
+    Then I see that the "Account backend" column is shown
 
 #  Scenario: change display name
 #    Given I act as Jane

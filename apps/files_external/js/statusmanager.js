@@ -391,7 +391,7 @@ OCA.Files_External.StatusManager = {
 			credentials_text: t('files_external', 'Please enter the credentials for the {mount} mount', {
 				'mount': mountPoint
 			}),
-			placeholder_username: t('files_external', 'Username'),
+			placeholder_username: t('files_external', 'Account name'),
 			placeholder_password: t('files_external', 'Password')
 		}));
 

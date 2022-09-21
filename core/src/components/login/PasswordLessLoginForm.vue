@@ -6,15 +6,15 @@
 		@submit.prevent="submit">
 		<fieldset>
 			<p class="grouptop groupbottom">
-				<label for="user" class="infield">{{ t('core', 'Username or	email') }}</label>
+				<label for="user" class="infield">{{ t('core', 'Account name or email') }}</label>
 				<input id="user"
 					ref="user"
 					v-model="user"
 					type="text"
 					name="user"
 					:autocomplete="autoCompleteAllowed ? 'on' : 'off'"
-					:placeholder="t('core', 'Username or email')"
-					:aria-label="t('core', 'Username or email')"
+					:placeholder="t('core', 'Account name or email')"
+					:aria-label="t('core', 'Account name or email')"
 					required
 					@change="$emit('update:username', user)">
 			</p>

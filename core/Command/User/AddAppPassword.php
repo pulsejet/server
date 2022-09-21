@@ -64,7 +64,7 @@ class AddAppPassword extends Command {
 			->addArgument(
 				'user',
 				InputArgument::REQUIRED,
-				'Username to add app password for'
+				'Account name to add app password for'
 			)
 			->addOption(
 				'password-from-env',

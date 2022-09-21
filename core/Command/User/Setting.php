@@ -53,7 +53,7 @@ class Setting extends Base {
 			->addArgument(
 				'uid',
 				InputArgument::REQUIRED,
-				'User ID used to login'
+				'Account ID used to login'
 			)
 			->addArgument(
 				'app',

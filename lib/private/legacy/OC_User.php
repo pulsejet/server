@@ -173,7 +173,7 @@ class OC_User {
 				self::setUserId($uid);
 				$userSession = \OC::$server->getUserSession();
 				if ($userSession->getUser() && !$userSession->getUser()->isEnabled()) {
-					$message = \OC::$server->getL10N('lib')->t('User disabled');
+					$message = \OC::$server->getL10N('lib')->t('Account disabled');
 					throw new LoginException($message);
 				}
 				$userSession->setLoginName($uid);

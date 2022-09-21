@@ -34,7 +34,7 @@ class SettingsContext implements Context, ActorAwareInterface {
 		// forThe()->checkbox("Accept user...") can not be used here; that would
 		// return the checkbox itself, but the element that the user interacts
 		// with is the label.
-		return Locator::forThe()->xpath("//label[normalize-space() = 'Accept user and group shares by default']")->
+		return Locator::forThe()->xpath("//label[normalize-space() = 'Accept shares from other accounts and groups by default']")->
 				describedAs("Accept shares by default checkbox in Sharing section in Personal Sharing Settings");
 	}
 
@@ -42,7 +42,7 @@ class SettingsContext implements Context, ActorAwareInterface {
 	 * @return Locator
 	 */
 	public static function acceptSharesByDefaultCheckboxInput() {
-		return Locator::forThe()->checkbox("Accept user and group shares by default")->
+		return Locator::forThe()->checkbox("Accept shares from other accounts and groups by default")->
 				describedAs("Accept shares by default checkbox input in Sharing section in Personal Sharing Settings");
 	}
 
@@ -72,16 +72,16 @@ class SettingsContext implements Context, ActorAwareInterface {
 		// forThe()->checkbox("Restrict username...") can not be used here; that
 		// would return the checkbox itself, but the element that the user
 		// interacts with is the label.
-		return Locator::forThe()->xpath("//label[normalize-space() = 'Allow username autocompletion to users within the same groups']")->
-				describedAs("Allow username autocompletion to users within the same groups checkbox in Sharing section in Administration Sharing Settings");
+		return Locator::forThe()->xpath("//label[normalize-space() = 'Allow account name autocompletion to accounts within the same groups']")->
+				describedAs("Allow account name autocompletion to accounts within the same groups checkbox in Sharing section in Administration Sharing Settings");
 	}
 
 	/**
 	 * @return Locator
 	 */
 	public static function restrictUsernameAutocompletionToGroupsCheckboxInput() {
-		return Locator::forThe()->checkbox("Allow username autocompletion to users within the same groups")->
-				describedAs("Allow username autocompletion to users within the same groups checkbox input in Sharing section in Administration Sharing Settings");
+		return Locator::forThe()->checkbox("Allow account name autocompletion to accounts within the same groups")->
+				describedAs("Allow account name autocompletion to accounts within the same groups checkbox input in Sharing section in Administration Sharing Settings");
 	}
 
 	/**

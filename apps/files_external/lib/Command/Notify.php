@@ -176,7 +176,7 @@ class Notify extends Base {
 		} catch (\Exception $e) {
 			$output->writeln('<error>Error while trying to create storage</error>');
 			if ($noAuth) {
-				$output->writeln('<error>Username and/or password required</error>');
+				$output->writeln('<error>Account name and/or password required</error>');
 			}
 			return 1;
 		}

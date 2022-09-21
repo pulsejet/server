@@ -29,7 +29,7 @@ style('systemtags', 'settings');
 
 <form id="systemtags" class="section" data-systemtag-id="">
 	<h2><?php p($l->t('Collaborative tags')); ?></h2>
-	<p class="settings-hint"><?php p($l->t('Collaborative tags are available for all users. Restricted tags are visible to users but cannot be assigned by them. Invisible tags are for internal use, since users cannot see or assign them.')); ?></p>
+	<p class="settings-hint"><?php p($l->t('Collaborative tags are available for all people. Restricted tags are visible to people but cannot be assigned by them. Invisible tags are for internal use, since people cannot see or assign them.')); ?></p>
 
 	<input type="hidden" name="systemtag" id="systemtag" placeholder="<?php p($l->t('Select tag …')); ?>" />
 

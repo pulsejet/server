@@ -36,10 +36,10 @@ script('core', 'install');
 		<legend><?php print_unescaped($l->t('Create an <strong>admin account</strong>')); ?></legend>
 		<p class="grouptop">
 			<input type="text" name="adminlogin" id="adminlogin"
-				placeholder="<?php p($l->t('Username')); ?>"
+				placeholder="<?php p($l->t('Account name')); ?>"
 				value="<?php p($_['adminlogin']); ?>"
 				autocomplete="off" autocapitalize="none" autocorrect="off" autofocus required>
-			<label for="adminlogin" class="infield"><?php p($l->t('Username')); ?></label>
+			<label for="adminlogin" class="infield"><?php p($l->t('Account name')); ?></label>
 		</p>
 		<p class="groupbottom">
 			<input type="password" name="adminpass" data-typetoggle="#show" id="adminpass"
@@ -102,9 +102,9 @@ script('core', 'install');
 		<fieldset id='databaseField'>
 		<div id="use_other_db">
 			<p class="grouptop">
-				<label for="dbuser" class="infield"><?php p($l->t('Database user')); ?></label>
+				<label for="dbuser" class="infield"><?php p($l->t('Database account')); ?></label>
 				<input type="text" name="dbuser" id="dbuser"
-					placeholder="<?php p($l->t('Database user')); ?>"
+					placeholder="<?php p($l->t('Database account')); ?>"
 					value="<?php p($_['dbuser']); ?>"
 					autocomplete="off" autocapitalize="none" autocorrect="off">
 			</p>

@@ -77,7 +77,7 @@
 					.tooltip('show');
 				_.delay(function() {
 					$el.tooltip('hide');
-					$el.attr('data-original-title', t('files', 'Copy direct link (only works for users who have access to this file/folder)'))
+					$el.attr('data-original-title', t('files', 'Copy direct link (only works for people who have access to this file/folder)'))
 						.tooltip('_fixTitle');
 				}, 3000);
 			});
@@ -176,7 +176,7 @@
 					starAltText: isFavorite ? t('files', 'Favorited') : t('files', 'Favorite'),
 					starClass: isFavorite ? 'icon-starred' : 'icon-star',
 					permalink: this._makePermalink(this.model.get('id')),
-					permalinkTitle: t('files', 'Copy direct link (only works for users who have access to this file/folder)')
+					permalinkTitle: t('files', 'Copy direct link (only works for people who have access to this file/folder)')
 				}));
 
 				// TODO: we really need OC.Previews

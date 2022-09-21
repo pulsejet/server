@@ -55,7 +55,7 @@ class Add extends Command {
 			->addArgument(
 				'uid',
 				InputArgument::REQUIRED,
-				'User ID used to login (must only contain a-z, A-Z, 0-9, -, _ and @)'
+				'Account ID used to login (must only contain a-z, A-Z, 0-9, -, _ and @)'
 			)
 			->addOption(
 				'password-from-env',
@@ -67,7 +67,7 @@ class Add extends Command {
 				'display-name',
 				null,
 				InputOption::VALUE_OPTIONAL,
-				'User name used in the web UI (can contain any characters)'
+				'Account name used in the web UI (can contain any characters)'
 			)
 			->addOption(
 				'group',
@@ -153,7 +153,7 @@ class Add extends Command {
 			}
 			if ($group instanceof IGroup) {
 				$group->addUser($user);
-				$output->writeln('User "' . $user->getUID() . '" added to group "' . $group->getGID() . '"');
+				$output->writeln('Account "' . $user->getUID() . '" added to group "' . $group->getGID() . '"');
 			}
 		}
 		return 0;

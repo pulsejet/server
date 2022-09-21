@@ -78,8 +78,8 @@ class CoreNotifier implements INotifier {
 		}
 
 		if ($notification->getSubject() === 'user_limit_reached') {
-			$notification->setParsedSubject($l->t('The user limit of this instance is reached.'));
-			$notification->setParsedMessage($l->t('Enter your subscription key to increase the user limit. For more information about Nextcloud Enterprise see our website.'));
+			$notification->setParsedSubject($l->t('The account limit of this instance is reached.'));
+			$notification->setParsedMessage($l->t('Enter your subscription key to increase the account limit. For more information about Nextcloud Enterprise see our website.'));
 			$notification->setLink('https://nextcloud.com/enterprise/');
 			$notification->setIcon($this->url->getAbsoluteURL($this->url->imagePath('core', 'places/contacts.svg')));
 			return $notification;

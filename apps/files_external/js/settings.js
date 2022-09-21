@@ -69,7 +69,7 @@ function addSelect2 ($elements, userListLimit) {
 		return;
 	}
 	$elements.select2({
-		placeholder: t('files_external', 'All users. Type to select user or group.'),
+		placeholder: t('files_external', 'All accounts. Type to select account or group.'),
 		allowClear: true,
 		multiple: true,
 		toggleSelect: true,

@@ -1662,7 +1662,7 @@ class ShareAPIControllerTest extends TestCase {
 
 	public function testCreateShareUserNoShareWith() {
 		$this->expectException(\OCP\AppFramework\OCS\OCSNotFoundException::class);
-		$this->expectExceptionMessage('Please specify a valid user');
+		$this->expectExceptionMessage('Please specify a valid person to share with');
 
 		$share = $this->newShare();
 		$this->shareManager->method('newShare')->willReturn($share);
@@ -1698,7 +1698,7 @@ class ShareAPIControllerTest extends TestCase {
 
 	public function testCreateShareUserNoValidShareWith() {
 		$this->expectException(\OCP\AppFramework\OCS\OCSNotFoundException::class);
-		$this->expectExceptionMessage('Please specify a valid user');
+		$this->expectExceptionMessage('Please specify a valid person to share with');
 
 		$share = $this->newShare();
 		$this->shareManager->method('newShare')->willReturn($share);
