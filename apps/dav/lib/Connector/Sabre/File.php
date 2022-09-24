@@ -494,6 +494,21 @@ class File extends Node implements IFile {
 			if ($res === false) {
 				throw new ServiceUnavailable($this->l10n->t('Could not open file'));
 			}
+
+			// comparing current file size with the one in DB
+			// if different, fix DB and refresh cache.
+			if ($this->getSize() !== $this->fileView->filesize($this->getPath())) {
+				$logger = \OC::$server->get(LoggerInterface::class);
+				$logger->warning('fixing cached file size from id=' . ($this->getFileId() ?? 'none?'));
+
+				/** @var \OCP\Files\Storage $storage */
+				/** @var string $internalPath */
+				[$storage, $internalPath] = $this->fileView->resolvePath($this->path);
+				$scanner = $storage->getScanner();
+				$scanner->scanFile($internalPath, 1);
+				$this->refreshInfo();
+			}
+
 			return $res;
 		} catch (GenericEncryptionException $e) {
 			// returning 503 will allow retry of the operation at a later point in time
