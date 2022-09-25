@@ -66,11 +66,12 @@ interface Folder extends Node {
 	/**
 	 * get the content of this directory
 	 *
+	 * @param string $mimetypeFilter limit returned content to this mimetype or mimepart
 	 * @throws \OCP\Files\NotFoundException
 	 * @return \OCP\Files\Node[]
 	 * @since 6.0.0
 	 */
-	public function getDirectoryListing();
+	public function getDirectoryListing($mimetypeFilter = '');
 
 	/**
 	 * Get the node at $path
