@@ -401,7 +401,7 @@ class LazyFolder implements \OCP\Files\Folder {
 	/**
 	 * @inheritDoc
 	 */
-	public function getDirectoryListing() {
+	public function getDirectoryListing($mimetypeFilter = '') {
 		return $this->__call(__FUNCTION__, func_get_args());
 	}
 

@@ -94,11 +94,12 @@ class Folder extends Node implements \OCP\Files\Folder {
 	/**
 	 * get the content of this directory
 	 *
+	 * @param string $mimetypeFilter limit returned content to this mimetype or mimepart
 	 * @return Node[]
 	 * @throws \OCP\Files\NotFoundException
 	 */
-	public function getDirectoryListing() {
-		$folderContent = $this->view->getDirectoryContent($this->path, '', $this->getFileInfo());
+	public function getDirectoryListing($mimetypeFilter = '') {
+		$folderContent = $this->view->getDirectoryContent($this->path, $mimetypeFilter, $this->getFileInfo());
 
 		return array_map(function (FileInfo $info) {
 			if ($info->getMimetype() === FileInfo::MIMETYPE_FOLDER) {

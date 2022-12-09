@@ -126,7 +126,7 @@ class NonExistingFolder extends Folder {
 		throw new NotFoundException();
 	}
 
-	public function getDirectoryListing() {
+	public function getDirectoryListing($mimetypeFilter = '') {
 		throw new NotFoundException();
 	}
 
