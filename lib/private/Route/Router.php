@@ -68,7 +68,9 @@ class Router implements IRouter {
 	public function __construct(LoggerInterface $logger) {
 		$this->logger = $logger;
 		$baseUrl = \OC::$WEBROOT;
-		if (!(\OC::$server->getConfig()->getSystemValue('htaccess.IgnoreFrontController', false) === true || getenv('front_controller_active') === 'true')) {
+		if (!(\ContextManager::daemon()
+			|| \OC::$server->getConfig()->getSystemValue('htaccess.IgnoreFrontController', false) === true
+			|| getenv('front_controller_active') === 'true')) {
 			$baseUrl .= '/index.php';
 		}
 		if (!\OC::$CLI && isset($_SERVER['REQUEST_METHOD'])) {

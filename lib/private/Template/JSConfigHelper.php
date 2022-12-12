@@ -172,7 +172,7 @@ class JSConfigHelper {
 				$this->config->getSystemValue('loglevel', ILogger::WARN)
 			),
 			'lost_password_link' => $this->config->getSystemValue('lost_password_link', null),
-			'modRewriteWorking' => $this->config->getSystemValue('htaccess.IgnoreFrontController', false) === true || getenv('front_controller_active') === 'true',
+			'modRewriteWorking' => \ContextManager::daemon() || $this->config->getSystemValue('htaccess.IgnoreFrontController', false) === true || getenv('front_controller_active') === 'true',
 			'no_unsupported_browser_warning' => $this->config->getSystemValue('no_unsupported_browser_warning', false),
 			'session_keepalive' => $this->config->getSystemValue('session_keepalive', true),
 			'session_lifetime' => min($this->config->getSystemValue('session_lifetime', $this->iniWrapper->getNumeric('session.gc_maxlifetime')), $this->iniWrapper->getNumeric('session.gc_maxlifetime')),

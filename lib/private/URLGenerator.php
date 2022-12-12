@@ -141,7 +141,10 @@ class URLGenerator implements IURLGenerator {
 	 * Returns a url to the given app and file.
 	 */
 	public function linkTo(string $appName, string $file, array $args = []): string {
-		$frontControllerActive = ($this->config->getSystemValue('htaccess.IgnoreFrontController', false) === true || getenv('front_controller_active') === 'true');
+		$frontControllerActive = (
+			\ContextManager::daemon()
+			|| $this->config->getSystemValue('htaccess.IgnoreFrontController', false) === true
+			|| getenv('front_controller_active') === 'true');
 
 		if ($appName !== '') {
 			$app_path = $this->getAppManager()->getAppPath($appName);
@@ -329,7 +332,8 @@ class URLGenerator implements IURLGenerator {
 			}
 		}
 
-		if ($this->config->getSystemValue('htaccess.IgnoreFrontController', false) === true
+		if (\ContextManager::daemon()
+		    || $this->config->getSystemValue('htaccess.IgnoreFrontController', false) === true
 			|| getenv('front_controller_active') === 'true') {
 			return $this->getAbsoluteURL('/apps/' . $appId . '/');
 		}

@@ -963,7 +963,7 @@ class OC {
 	/**
 	 * Handle the request
 	 */
-	public static function handleRequest() {
+	public static function handleRequest($request) {
 		\OC::$server->getEventLogger()->start('handle_request', 'Handle request');
 		$systemConfig = \OC::$server->getSystemConfig();
 
@@ -984,7 +984,6 @@ class OC {
 			exit();
 		}
 
-		$request = \OC::$server->getRequest();
 		$requestPath = $request->getRawPathInfo();
 		if ($requestPath === '/heartbeat') {
 			return;
@@ -1041,7 +1040,7 @@ class OC {
 			}
 		}
 
-		if (!self::$CLI) {
+		if (\ContextManager::daemon() || !self::$CLI) {
 			try {
 				if (!((bool) $systemConfig->getValue('maintenance', false)) && !\OCP\Util::needUpgrade()) {
 					OC_App::loadApps(['filesystem', 'logging']);

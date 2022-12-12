@@ -720,6 +720,8 @@ class Request implements \ArrayAccess, \Countable, IRequest {
 			$requestUri = substr($requestUri, 0, $pos);
 		}
 
+		return $requestUri;
+
 		$scriptName = $this->server['SCRIPT_NAME'];
 		$pathInfo = $requestUri;
 
