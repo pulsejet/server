@@ -46,14 +46,32 @@ use function class_exists;
  */
 class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 
-	/** @var Container */
+	/**
+	 * @var Container
+	 *
+	 * This is the global container containing globally registered services.
+	 * These will be persisted across requests and shared between workers.
+	 */
 	protected $container;
 
-	protected $statics = [];
-	public $builders = [];
+	/**
+	 * @var array[string]Container
+	 *
+	 * This is a list of containers that are specific to a thread.
+	 */
+	protected $threadContainers;
+
+	/**
+	 * @var array[string]Closure
+	 *
+	 * This is a list of closures that are used to build non-persistent services.
+	 */
+	protected $factories;
 
 	public function __construct() {
 		$this->container = new Container();
+		$this->threadContainers = [];
+		$this->factories = [];
 	}
 
 	/**
@@ -69,9 +87,46 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 		return $this->query($id);
 	}
 
+	/**
+	 * Query a service from the global container.
+	 * If the service does not exist, it will be instantiated and stored
+	 * as a global service in the global container.
+	 *
+	 * Use with caution. Global services are shared between all threads.
+	 *
+	 * @template T
+	 * @param class-string<T>|string $id
+	 * @return T|mixed
+	 * @throws QueryException
+	 */
+	public function setGlobal(string $id) {
+		$service = $this->get($id);
+		$this->registerGlobalParameter($id, $service);
+		return $service;
+	}
+
 	public function has(string $id): bool {
 		// If a service is no registered but is an existing class, we can probably load it
-		return isset($this->container[$id]) || array_key_exists($id, $this->builders) || class_exists($id);
+		return isset($this->container[$id])
+		    || isset($this->getThreadContainer()[$id])
+			|| isset($this->factories[$id])
+			|| class_exists($id);
+	}
+
+	public function hasInstance(string $id): bool {
+		return isset($this->container[$id])
+		    || isset($this->getThreadContainer()[$id]);
+	}
+
+	/**
+	 * Get the local container for the current thread.
+	 */
+	public function getThreadContainer(): Container {
+		$threadId = \ContextManager::id();
+		if (!isset($this->threadContainers[$threadId])) {
+			$this->threadContainers[$threadId] = new Container();
+		}
+		return $this->threadContainers[$threadId];
 	}
 
 	/**
@@ -105,10 +160,6 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 					return $parameter->getDefaultValue();
 				}
 
-				error_log('Could not resolve ' . $resolveName .
-						  ' while trying to build class ' . $class->getName() .
-						  ': ' . $e->getMessage());
-
 				if ($parameterType !== null && ($parameterType instanceof ReflectionNamedType) && !$parameterType->isBuiltin()) {
 					$resolveName = $parameter->getName();
 					try {
@@ -141,76 +192,83 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 
 	public function query(string $name, bool $autoload = true) {
 		$name = $this->sanitizeName($name);
-		$key = $this->key($name);
 
-		if (isset($this->container[$key])) {
-			return $this->container[$key];
+		// Look for a superglobal object
+		if (\OC::$server !== null && $this !== \OC::$server && \OC::$server->hasInstance($name)) {
+			return \OC::$server->get($name);
 		}
 
-		if (isset($this->builders[$name])) {
-			$instance = $this->builders[$name]();
-			$this->container[$key] = $instance;
+		// Look in globals first
+		if (isset($this->container[$name])) {
+			return $this->container[$name];
+		}
+
+		// Look in thread locals
+		$threadContainer = $this->getThreadContainer();
+		if (isset($threadContainer[$name])) {
+			return $threadContainer[$name];
+		}
+
+		// Look for a local factory
+		if (isset($this->factories[$name])) {
+			$instance = $this->factories[$name]();
+			$threadContainer[$name] = $instance;
 			return $instance;
 		}
 
+		// Attempt to directly load the class
 		if ($autoload) {
 			$object = $this->resolve($name);
-			$this->registerService($name, function () use ($object) {
-				return $object;
-			});
+			$threadContainer[$name] = $object;
 			return $object;
 		}
 
 		throw new QueryException('Could not resolve ' . $name . '!');
 	}
 
-	public function key(string $name): string {
-		if (isset($this->statics[$name])) {
-			return $name;
-		}
-		return (string) \ContextManager::id() . '-' . $name;
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 */
+	public function registerParameter($name, $value, $global = false) {
+		$this->getThreadContainer()[$name] = $value;
 	}
 
 	/**
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	public function registerParameter($name, $value) {
-		$this[$name] = $value;
+	public function registerGlobalParameter($name, $value, $global = false) {
+		$this->container[$name] = $value;
 	}
 
 	/**
-	 * The given closure is call the first time the given service is queried.
+	 * The given closure is called to create the specified service.
 	 * The closure has to return the instance for the given service.
-	 * Created instance will be cached in case $shared is true.
+	 * Created instance will be stored as global in case $global is true.
 	 *
 	 * @param string $name name of the service to register another backend for
 	 * @param Closure $closure the closure to be called on service creation
-	 * @param bool $shared
+	 * @param bool $global
 	 */
-	public function registerService($name, Closure $closure, $shared = true, $static = false) {
+	public function registerService($name, Closure $closure, $global = false) {
 		$wrapped = function () use ($closure) {
 			return $closure($this);
 		};
 		$name = $this->sanitizeName($name);
 
-		if ($static) {
-			$this->statics[$name] = true;
-		}
-		$key = $this->key($name);
-		if (isset($this[$key])) {
-			unset($this[$key]);
-		}
-
-		if (!$static && \ContextManager::id() === 0) {
-			$this->builders[$name] = $wrapped;
-		}
-
-		if ($shared) {
-			$this[$key] = $wrapped;
+		if ($global) {
+			$this->container[$name] = $this->container->factory($wrapped);
 		} else {
-			$this[$key] = $this->container->factory($wrapped);
+			$this->factories[$name] = $wrapped;
 		}
+	}
+
+	/**
+	 * See the docs of registerService for details.
+	 */
+	public function registerGlobalService(string $name, Closure $closure) {
+		$this->registerService($name, $closure, true);
 	}
 
 	/**
@@ -223,7 +281,7 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 	public function registerAlias($alias, $target) {
 		$this->registerService($alias, function (ContainerInterface $container) use ($target) {
 			return $container->get($target);
-		}, false, true);
+		}, false);
 	}
 
 	/*
@@ -241,7 +299,7 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 	 * @deprecated 20.0.0 use \Psr\Container\ContainerInterface::has
 	 */
 	public function offsetExists($id): bool {
-		return $this->container->offsetExists($id);
+		return $this->has($id);
 	}
 
 	/**
@@ -250,7 +308,7 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 	 */
 	#[\ReturnTypeWillChange]
 	public function offsetGet($id) {
-		return $this->container->offsetGet($id);
+		return $this->get($id);
 	}
 
 	/**

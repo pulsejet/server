@@ -290,15 +290,11 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->webRoot = $webRoot;
 
 		// To find out if we are running from CLI or not
-		$this->registerParameter('isCLI', \OC::$CLI);
-		$this->registerParameter('serverRoot', \OC::$SERVERROOT);
+		$this->registerGlobalParameter('isCLI', \OC::$CLI);
+		$this->registerGlobalParameter('serverRoot', \OC::$SERVERROOT);
 
-		$this->registerService(ContainerInterface::class, function (ContainerInterface $c) {
-			return $c;
-		});
-		$this->registerService(\OCP\IServerContainer::class, function (ContainerInterface $c) {
-			return $c;
-		});
+		$this->registerGlobalParameter(ContainerInterface::class, $this);
+		$this->registerGlobalParameter(\OCP\IServerContainer::class, $this);
 
 		$this->registerAlias(\OCP\Calendar\IManager::class, \OC\Calendar\Manager::class);
 		/** @deprecated 19.0.0 */
@@ -321,9 +317,10 @@ class Server extends ServerContainer implements IServerContainer {
 
 		$this->registerAlias(IActionFactory::class, ActionFactory::class);
 
-		$this->registerService(View::class, function (Server $c) {
+		$this->registerGlobalService(View::class, function (ContainerInterface $c) {
+			// Cannot be a parameter since it refers back to server
 			return new View();
-		}, false);
+		});
 
 		$this->registerService(IPreview::class, function (ContainerInterface $c) {
 			return new PreviewManager(
@@ -354,11 +351,11 @@ class Server extends ServerContainer implements IServerContainer {
 			);
 		});
 
-		$this->registerService(IProfiler::class, function (Server $c) {
+		$this->registerGlobalService(IProfiler::class, function (Server $c) {
 			return new Profiler($c->get(SystemConfig::class));
 		});
 
-		$this->registerService(\OCP\Encryption\IManager::class, function (Server $c): Encryption\Manager {
+		$this->registerGlobalService(\OCP\Encryption\IManager::class, function (Server $c): Encryption\Manager {
 			$view = new View();
 			$util = new Encryption\Util(
 				$view,
@@ -1041,19 +1038,10 @@ class Server extends ServerContainer implements IServerContainer {
 				$stream = 'php://input';
 			}
 
-			$server = \ContextManager::get('_SERVER');
-
 			return new Request(
-				[
-					'get' => \ContextManager::get('_GET'),
-					'post' => \ContextManager::get('_POST'),
-					'files' => \ContextManager::get('_FILES'),
-					'server' => \ContextManager::get('_SERVER'),
-					'env' => \ContextManager::get('_ENV'),
-					'cookies' => \ContextManager::get('_COOKIE'),
-					'method' =>  ($server ? $server['REQUEST_METHOD'] : '') ?: '',
+				Request::getGlobalVars([
 					'urlParams' => $urlParams,
-				],
+				]),
 				$this->get(IRequestId::class),
 				$this->get(\OCP\IConfig::class),
 				$this->get(CsrfTokenManager::class),
@@ -1250,17 +1238,7 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerService('CryptoWrapper', function (ContainerInterface $c) {
 			// FIXME: Instantiated here due to cyclic dependency
 			$request = new Request(
-				[
-					'get' => $_GET,
-					'post' => $_POST,
-					'files' => $_FILES,
-					'server' => $_SERVER,
-					'env' => $_ENV,
-					'cookies' => $_COOKIE,
-					'method' => (isset($_SERVER) && isset($_SERVER['REQUEST_METHOD']))
-						? $_SERVER['REQUEST_METHOD']
-						: null,
-				],
+				Request::getGlobalVars(),
 				$c->get(IRequestId::class),
 				$c->get(\OCP\IConfig::class)
 			);
@@ -1459,7 +1437,7 @@ class Server extends ServerContainer implements IServerContainer {
 
 	public function boot() {
 		/** @var HookConnector $hookConnector */
-		$hookConnector = $this->get(HookConnector::class);
+		$hookConnector = $this->setGlobal(HookConnector::class);
 		$hookConnector->viewToNode();
 	}
 

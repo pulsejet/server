@@ -416,16 +416,16 @@ class OC {
 	}
 
 	public static function initSession() {
-		if (self::$server->getRequest()->getServerProtocol() === 'https') {
-			ini_set('session.cookie_secure', 'true');
-		}
+		// if (self::$server->getRequest()->getServerProtocol() === 'https') {
+		// 	ini_set('session.cookie_secure', 'true');
+		// }
 
 		// prevents javascript from accessing php session cookies
-		ini_set('session.cookie_httponly', 'true');
+		// ini_set('session.cookie_httponly', 'true');
 
 		// set the cookie path to the Nextcloud directory
 		$cookie_path = OC::$WEBROOT ? : '/';
-		ini_set('session.cookie_path', $cookie_path);
+		// ini_set('session.cookie_path', $cookie_path);
 
 		// Let the session name be changed in the initSession Hook
 		$sessionName = OC_Util::getInstanceId();
@@ -448,7 +448,7 @@ class OC {
 
 		//try to set the session lifetime
 		$sessionLifeTime = self::getSessionLifeTime();
-		@ini_set('gc_maxlifetime', (string)$sessionLifeTime);
+		// @ini_set('gc_maxlifetime', (string)$sessionLifeTime);
 
 		// session timeout
 		if ($session->exists('LAST_ACTIVITY') && (time() - $session->get('LAST_ACTIVITY') > $sessionLifeTime)) {
@@ -623,6 +623,9 @@ class OC {
 		$eventLogger->log('autoloader', 'Autoloader', $loaderStart, $loaderEnd);
 		$eventLogger->start('boot', 'Initialize');
 
+		// Register some global services
+		self::$server->setGlobal(\OC\User\Manager::class);
+
 		// Override php.ini and log everything if we're troubleshooting
 		if (self::$config->getValue('loglevel') === ILogger::DEBUG) {
 			error_reporting(E_ALL);
@@ -681,7 +684,7 @@ class OC {
 		}
 
 		/** @var \OC\AppFramework\Bootstrap\Coordinator $bootstrapCoordinator */
-		$bootstrapCoordinator = \OC::$server->query(\OC\AppFramework\Bootstrap\Coordinator::class);
+		$bootstrapCoordinator = \OC::$server->setGlobal(\OC\AppFramework\Bootstrap\Coordinator::class);
 		$bootstrapCoordinator->runInitialRegistration();
 
 		$eventLogger->start('init_session', 'Initialize session');

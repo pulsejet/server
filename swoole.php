@@ -18,6 +18,11 @@ try {
 }
 
 function swooleSession($request, $response) {
+    // Manifest requests are made without cookies, skip session handling
+    if (\ContextManager::nocookie()) {
+        return;
+    }
+
     // https://github.com/phpearth/swoole-engine/blob/master/docs/sessions.md
     if (session_status() != PHP_SESSION_ACTIVE) {
         session_start();
@@ -41,9 +46,9 @@ function swooleSession($request, $response) {
             $params['lifetime'] ? time() + $params['lifetime'] : null,
             $params['path'],
             $params['domain'],
-            $params['secure'],
-            $params['httponly'],
-            $params['samesite']
+            $params['secure'] ?? false,
+            $params['httponly'] ?? true,
+            $params['samesite'] ?? 'Lax'
         );
     }
 
@@ -78,8 +83,6 @@ $http->on("WorkerStart", function($server, $workerId)
 });
 
 $http->on('request', function ($request, $response) {
-    swooleSession($request, $response);
-
     $time = microtime(true);
 
     ContextManager::set('__id', Co::getCid());
@@ -98,6 +101,16 @@ $http->on('request', function ($request, $response) {
         'SERVER_PROTOCOL' => 'HTTP/1.1',
     ]);
     ContextManager::set('_ENV', (array)$request->header);
+
+    // fail fast if favicon
+    if ($request->server['request_uri'] === '/favicon.ico' || \ContextManager::nocookie()) {
+        $response->status(404);
+        $response->end();
+        return;
+    }
+
+    // Initialize session
+    swooleSession($request, $response);
 
     ob_start();
     try {

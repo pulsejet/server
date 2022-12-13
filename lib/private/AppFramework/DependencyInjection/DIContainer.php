@@ -123,7 +123,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 		 */
 		$this->registerService(IOutput::class, function () {
 			return new Output($this->getServer()->getWebRoot());
-		});
+		}, true, false, true);
 
 		$this->registerService(Folder::class, function () {
 			return $this->getServer()->getUserFolder();
@@ -165,22 +165,22 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 		// commonly used attributes
 		$this->registerService('userId', function (ContainerInterface $c) {
 			return $c->get(IUserSession::class)->getSession()->get('user_id');
-		});
+		}, false, false, true);
 
 		$this->registerService('webRoot', function (ContainerInterface $c) {
 			return $c->get(IServerContainer::class)->getWebRoot();
-		});
+		}, true, true);
 
 		$this->registerService('OC_Defaults', function (ContainerInterface $c) {
 			return $c->get(IServerContainer::class)->getThemingDefaults();
-		});
+		}, true, true);
 
 		$this->registerService('Protocol', function (ContainerInterface $c) {
 			/** @var \OC\Server $server */
 			$server = $c->get(IServerContainer::class);
 			$protocol = $server->getRequest()->getHttpProtocol();
 			return new Http($_SERVER, $protocol);
-		});
+		}, true, false, true);
 
 		$this->registerService('Dispatcher', function (ContainerInterface $c) {
 			return new Dispatcher(
@@ -193,7 +193,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 				$c->get(LoggerInterface::class),
 				$c->get(EventLogger::class)
 			);
-		});
+		}, true, false, true);
 
 		/**
 		 * App Framework default arguments
@@ -338,7 +338,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 				$c->get(IInitialStateService::class),
 				$c->get('AppName')
 			);
-		});
+		}, true, false, true);
 	}
 
 	/**
@@ -469,10 +469,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 	 */
 	public function queryNoFallback($name) {
 		$name = $this->sanitizeName($name);
-
-		if ($this->offsetExists($name)) {
-			return parent::query($name);
-		} elseif (array_key_exists($name, $this->builders)) {
+		if ($this->has($name)) {
 			return parent::query($name);
 		} elseif ($this->appName === 'settings' && str_starts_with($name, 'OC\\Settings\\')) {
 			return parent::query($name);

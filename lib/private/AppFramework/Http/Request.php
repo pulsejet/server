@@ -858,6 +858,26 @@ class Request implements \ArrayAccess, \Countable, IRequest {
 	}
 
 	/**
+	 * Get vars from current context
+	 */
+	public static function getGlobalVars(?array $extra = null) {
+		$server = \ContextManager::get('_SERVER');
+		$vars = [
+			'get' => \ContextManager::get('_GET'),
+			'post' => \ContextManager::get('_POST'),
+			'files' => \ContextManager::get('_FILES'),
+			'server' => \ContextManager::get('_SERVER'),
+			'env' => \ContextManager::get('_ENV'),
+			'cookies' => \ContextManager::get('_COOKIE'),
+			'method' =>  ($server ? $server['REQUEST_METHOD'] : '') ?: '',
+		];
+		if ($extra) {
+			$vars = array_merge($vars, $extra);
+		}
+		return $vars;
+	}
+
+	/**
 	 * Returns the overwritehost setting from the config if set and
 	 * if the overwrite condition is met
 	 * @return string|null overwritehost value or null if not defined or the defined condition

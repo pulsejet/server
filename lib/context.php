@@ -10,11 +10,11 @@ class ContextManager
         return self::get('__id') ?? 0;
     }
 
-    public static function response(): \Swoole\Http\Response {
+    public static function response(): ?\Swoole\Http\Response {
         return self::get('__RESPONSE');
     }
 
-    public static function request(): \Swoole\Http\Request {
+    public static function request(): ?\Swoole\Http\Request {
         return self::get('__REQUEST');
     }
 
@@ -55,7 +55,15 @@ class ContextManager
     }
 
     public static function setcookie(string $name, string $value, array $options = []) {
+        if (self::nocookie()) {
+            return;
+        }
+
         if (self::daemon()) {
+            if (!self::response()) {
+                return;
+            }
+
             self::response()->setCookie(
                 $name, $value,
                 $options['expires'] ?? 0,
@@ -75,6 +83,13 @@ class ContextManager
         } else {
             die();
         }
+    }
+
+    public static function nocookie() {
+        if (!self::request()) {
+            return true;
+        }
+        return str_contains(self::request()->server['request_uri'], 'apps/theming/manifest');
     }
 
     // Set is used to save a new value under the context

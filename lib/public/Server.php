@@ -54,4 +54,20 @@ final class Server {
 		/** @psalm-suppress UndefinedClass */
 		return \OC::$server->get($serviceName);
 	}
+
+	/**
+	 * @template T
+	 * @param class-string<T>|string $serviceName
+	 * @return T|mixed
+	 * @psalm-template S as class-string<T>|string
+	 * @psalm-param S $serviceName
+	 * @psalm-return (S is class-string<T> ? T : mixed)
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 * @since 100.0.0
+	 */
+	public static function setGlobal(string $serviceName): void {
+		/** @psalm-suppress UndefinedClass */
+		\OC::$server->setGlobal($serviceName);
+	}
 }

@@ -87,7 +87,7 @@ class CryptoWrapper {
 					$webRoot = '/';
 				}
 
-				setcookie(
+				\ContextManager::setcookie(
 					self::COOKIE_NAME,
 					$this->passphrase,
 					[
