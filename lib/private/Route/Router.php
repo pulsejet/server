@@ -73,8 +73,8 @@ class Router implements IRouter {
 			|| getenv('front_controller_active') === 'true')) {
 			$baseUrl .= '/index.php';
 		}
-		if (!\OC::$CLI && isset($_SERVER['REQUEST_METHOD'])) {
-			$method = $_SERVER['REQUEST_METHOD'];
+		if ((!\OC::$CLI || \ContextManager::daemon()) && isset(\ContextManager::get('_SERVER')['REQUEST_METHOD'])) {
+			$method = \ContextManager::get('_SERVER')['REQUEST_METHOD'];
 		} else {
 			$method = 'GET';
 		}

@@ -96,7 +96,7 @@ class BeforeTemplateRenderedListener implements IEventListener {
 				$this->config->getUserValue($userId, Application::APP_ID, 'background_color', BackgroundService::DEFAULT_COLOR),
 			);
 
-			/** 
+			/**
 			 * Admin background. `backgroundColor` if disabled,
 			 * mime type if defined and empty by default
 			 */

@@ -92,15 +92,16 @@ class SameSiteCookieMiddleware extends Middleware {
 		}
 
 		foreach ($policies as $policy) {
-			header(
-				sprintf(
-					'Set-Cookie: %snc_sameSiteCookie%s=true; path=%s; httponly;' . $secureCookie . 'expires=Fri, 31-Dec-2100 23:59:59 GMT; SameSite=%s',
-					$cookiePrefix,
-					$policy,
-					$cookieParams['path'],
-					$policy
-				),
-				false
+			\ContextManager::setcookie(
+				$cookiePrefix . 'nc_sameSiteCookie' . $policy,
+				'true',
+				[
+					'httponly' => true,
+					'expires' => 4102444800,
+					'path' => $cookieParams['path'],
+					'samesite' => $policy,
+					'secure' => $cookieParams['secure'],
+				]
 			);
 		}
 	}

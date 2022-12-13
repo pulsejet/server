@@ -46,7 +46,7 @@ class Output implements IOutput {
 	 * @param string $out
 	 */
 	public function setOutput($out) {
-		print($out);
+		\ContextManager::print($out);
 	}
 
 	/**
@@ -67,14 +67,14 @@ class Output implements IOutput {
 	 * @param string $header
 	 */
 	public function setHeader($header) {
-		header($header);
+		\ContextManager::header($header);
 	}
 
 	/**
 	 * @param int $code sets the http status code
 	 */
 	public function setHttpResponseCode($code) {
-		http_response_code($code);
+		\ContextManager::http_response_code($code);
 	}
 
 	/**
@@ -96,7 +96,7 @@ class Output implements IOutput {
 	public function setCookie($name, $value, $expire, $path, $domain, $secure, $httpOnly, $sameSite = 'Lax') {
 		$path = $this->webRoot ? : '/';
 
-		setcookie($name, $value, [
+		\ContextManager::setcookie($name, $value, [
 			'expires' => $expire,
 			'path' => $path,
 			'domain' => $domain,

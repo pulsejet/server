@@ -164,6 +164,7 @@ class App {
 		$dispatcher = $container->get('Dispatcher');
 
 		[
+			$httpStatus,
 			$httpHeaders,
 			$responseHeaders,
 			$responseCookies,
@@ -181,6 +182,10 @@ class App {
 			$profiler->saveProfile($profile);
 			$io->setHeader('X-Debug-Token:' . $profile->getToken());
 			$io->setHeader('Server-Timing: token;desc="' . $profile->getToken() . '"');
+		}
+
+		if (\ContextManager::daemon()) {
+			\ContextManager::http_response_code($httpStatus);
 		}
 
 		if (!is_null($httpHeaders)) {

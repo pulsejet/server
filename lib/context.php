@@ -18,12 +18,54 @@ class ContextManager
         return self::get('__REQUEST');
     }
 
+    public static function cookies(): array {
+        return self::get('_COOKIE') ?? [];
+    }
+
     public static function http_response_code(int $code): int {
         if (self::daemon()) {
             self::response()->status($code);
             return $code;
         } else {
             return http_response_code($code);
+        }
+    }
+
+    public static function print(string $str) {
+        if (self::daemon()) {
+            self::response()->write($str);
+        } else {
+            print $str;
+        }
+    }
+
+    public static function header(string $header) {
+        if (self::daemon()) {
+            // skip if no colon
+            if (strpos($header, ':') === false) {
+                return;
+            }
+
+            // split header into name and value
+            $parts = explode(':', $header, 2);
+            self::response()->setHeader($parts[0], trim($parts[1]));
+        } else {
+            header($header);
+        }
+    }
+
+    public static function setcookie(string $name, string $value, array $options = []) {
+        if (self::daemon()) {
+            self::response()->setCookie(
+                $name, $value,
+                $options['expires'] ?? 0,
+                $options['path'] ?? '/',
+                $options['domain'] ?? '',
+                $options['secure'] ?? false,
+                $options['httponly'] ?? false,
+                $options['samesite'] ?? 'Lax');
+        } else {
+            setcookie($name, $value, $options);
         }
     }
 

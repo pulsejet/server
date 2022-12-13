@@ -504,15 +504,16 @@ class OC {
 		}
 
 		foreach ($policies as $policy) {
-			header(
-				sprintf(
-					'Set-Cookie: %snc_sameSiteCookie%s=true; path=%s; httponly;' . $secureCookie . 'expires=Fri, 31-Dec-2100 23:59:59 GMT; SameSite=%s',
-					$cookiePrefix,
-					$policy,
-					$cookieParams['path'],
-					$policy
-				),
-				false
+			\ContextManager::setcookie(
+				$cookiePrefix . 'nc_sameSiteCookie' . $policy,
+				'true',
+				[
+					'httponly' => true,
+					'expires' => 4102444800,
+					'path' => $cookieParams['path'],
+					'samesite' => $policy,
+					'secure' => $cookieParams['secure'],
+				]
 			);
 		}
 	}
@@ -569,7 +570,7 @@ class OC {
 					exit();
 				}
 			}
-		} elseif (!isset($_COOKIE['nc_sameSiteCookielax']) || !isset($_COOKIE['nc_sameSiteCookiestrict'])) {
+		} elseif (!isset(\ContextManager::cookies()['nc_sameSiteCookielax']) || !isset(\ContextManager::cookies()['nc_sameSiteCookiestrict'])) {
 			self::sendSameSiteCookies();
 		}
 	}
@@ -590,7 +591,7 @@ class OC {
 		spl_autoload_register([self::$loader, 'load']);
 		$loaderEnd = microtime(true);
 
-		self::$CLI = (php_sapi_name() == 'cli');
+		self::$CLI = (php_sapi_name() == 'cli') && !\ContextManager::daemon();
 
 		// Add default composer PSR-4 autoloader
 		self::$composerAutoloader = require_once OC::$SERVERROOT . '/lib/composer/autoload.php';
@@ -693,8 +694,6 @@ class OC {
 		self::checkInstalled($systemConfig);
 
 		OC_Response::addSecurityHeaders();
-
-		self::performSameSiteCookieProtection($config);
 
 		if (!defined('OC_CONSOLE')) {
 			$errors = OC_Util::checkServer($systemConfig);
@@ -974,6 +973,13 @@ class OC {
 		\OC::$server->getEventLogger()->start('handle_request', 'Handle request');
 		$systemConfig = \OC::$server->getSystemConfig();
 
+		$config = \OC::$server->get(\OCP\IConfig::class);
+		OC_App::loadApps(['session']);
+		if (!self::$CLI) {
+			self::initSession();
+			self::performSameSiteCookieProtection($config);
+		}
+
 		// Check if Nextcloud is installed or in maintenance (update) mode
 		if (!$systemConfig->getValue('installed', false)) {
 			\OC::$server->getSession()->clear();
@@ -1047,7 +1053,7 @@ class OC {
 			}
 		}
 
-		if (\ContextManager::daemon() || !self::$CLI) {
+		if (!self::$CLI) {
 			try {
 				if (!((bool) $systemConfig->getValue('maintenance', false)) && !\OCP\Util::needUpgrade()) {
 					OC_App::loadApps(['filesystem', 'logging']);
