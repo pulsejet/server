@@ -12,9 +12,10 @@ use OCP\Security\ISecureRandom;
 try {
     include __DIR__ . "/lib/context.php";
     include __DIR__ . "/lib/base.php";
-} catch (\Exception $e) {
-    print("swoole-error: ". $e->getMessage() . PHP_EOL);
-    debug_print_backtrace();
+} catch (\Error $e) {
+    error_log("bootstrap-error: ". $e->getMessage() . PHP_EOL);
+    error_log($e->getTraceAsString());
+    exit;
 }
 
 function swooleSession($request, $response) {

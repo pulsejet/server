@@ -106,7 +106,7 @@ class ServerContainer extends SimpleContainer {
 				if (class_exists($applicationClassName)) {
 					$app = new $applicationClassName();
 					if (isset($this->appContainers[$namespace])) {
-						$this->appContainers[$namespace]->offsetSet($applicationClassName, $app);
+						$this->appContainers[$namespace]->registerGlobalParameter($applicationClassName, $app);
 						return $this->appContainers[$namespace];
 					}
 				}

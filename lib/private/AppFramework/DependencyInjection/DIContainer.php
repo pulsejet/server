@@ -98,8 +98,8 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 	public function __construct(string $appName, array $urlParams = [], ServerContainer $server = null) {
 		parent::__construct();
 		$this->appName = $appName;
-		$this['appName'] = $appName;
-		$this['urlParams'] = $urlParams;
+		$this->registerGlobalParameter('appName', $appName);
+		$this->registerParameter('urlParams', $urlParams);
 
 		$this->registerAlias('Request', IRequest::class);
 
@@ -165,22 +165,22 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 		// commonly used attributes
 		$this->registerService('userId', function (ContainerInterface $c) {
 			return $c->get(IUserSession::class)->getSession()->get('user_id');
-		}, false, false, true);
+		});
 
 		$this->registerService('webRoot', function (ContainerInterface $c) {
 			return $c->get(IServerContainer::class)->getWebRoot();
-		}, true, true);
+		}, true);
 
 		$this->registerService('OC_Defaults', function (ContainerInterface $c) {
 			return $c->get(IServerContainer::class)->getThemingDefaults();
-		}, true, true);
+		}, true);
 
 		$this->registerService('Protocol', function (ContainerInterface $c) {
 			/** @var \OC\Server $server */
 			$server = $c->get(IServerContainer::class);
 			$protocol = $server->getRequest()->getHttpProtocol();
 			return new Http($_SERVER, $protocol);
-		}, true, false, true);
+		}, true);
 
 		$this->registerService('Dispatcher', function (ContainerInterface $c) {
 			return new Dispatcher(
@@ -193,7 +193,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 				$c->get(LoggerInterface::class),
 				$c->get(EventLogger::class)
 			);
-		}, true, false, true);
+		}, true);
 
 		/**
 		 * App Framework default arguments

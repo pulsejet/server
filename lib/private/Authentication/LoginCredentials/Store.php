@@ -32,30 +32,25 @@ use OC\Authentication\Token\IProvider;
 use OCP\Authentication\Exceptions\CredentialsUnavailableException;
 use OCP\Authentication\LoginCredentials\ICredentials;
 use OCP\Authentication\LoginCredentials\IStore;
-use OCP\ISession;
 use OCP\Session\Exceptions\SessionNotAvailableException;
 use OCP\Util;
 use Psr\Log\LoggerInterface;
 
 class Store implements IStore {
-
-	/** @var ISession */
-	private $session;
-
 	/** @var LoggerInterface */
 	private $logger;
 
 	/** @var IProvider|null */
 	private $tokenProvider;
 
-	public function __construct(ISession $session,
-								LoggerInterface $logger,
+	public function __construct(LoggerInterface $logger,
 								IProvider $tokenProvider = null) {
-		$this->session = $session;
 		$this->logger = $logger;
 		$this->tokenProvider = $tokenProvider;
 
-		Util::connectHook('OC_User', 'post_login', $this, 'authenticate');
+		if (\ContextManager::id() === 0) {
+			Util::connectHook('OC_User', 'post_login', $this, 'authenticate');
+		}
 	}
 
 	/**
@@ -64,16 +59,8 @@ class Store implements IStore {
 	 * @param array $params
 	 */
 	public function authenticate(array $params) {
-		$this->session->set('login_credentials', json_encode($params));
-	}
-
-	/**
-	 * Replace the session implementation
-	 *
-	 * @param ISession $session
-	 */
-	public function setSession(ISession $session) {
-		$this->session = $session;
+		$session = \OC::$server->getSession();
+		$session->set('login_credentials', json_encode($params));
 	}
 
 	/**
@@ -87,9 +74,10 @@ class Store implements IStore {
 			throw new CredentialsUnavailableException();
 		}
 
+		$session = \OC::$server->getSession();
 		$trySession = false;
 		try {
-			$sessionId = $this->session->getId();
+			$sessionId = $session->getId();
 			$token = $this->tokenProvider->getToken($sessionId);
 
 			$uid = $token->getUID();
@@ -107,12 +95,12 @@ class Store implements IStore {
 			$trySession = true;
 		}
 
-		if ($trySession && $this->session->exists('login_credentials')) {
+		if ($trySession && $session->exists('login_credentials')) {
 			/** @var array $creds */
-			$creds = json_decode($this->session->get('login_credentials'), true);
+			$creds = json_decode($session->get('login_credentials'), true);
 			return new Credentials(
 				$creds['uid'],
-				$creds['loginName'] ?? $this->session->get('loginname') ?? $creds['uid'], // Pre 20 didn't have a loginName property, hence fall back to the session value and then to the UID
+				$creds['loginName'] ?? $session->get('loginname') ?? $creds['uid'], // Pre 20 didn't have a loginName property, hence fall back to the session value and then to the UID
 				$creds['password']
 			);
 		}
