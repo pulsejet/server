@@ -964,6 +964,13 @@ class OC {
 	 * Handle the request
 	 */
 	public static function handleRequest($request) {
+		// Reset static classes
+		\OC_App::reset();
+		\OC_Template::reset();
+		\OC\TemplateLayout::reset();
+		\OCP\Util::reset();
+		\OC::$server->get(\OC\AppFramework\Bootstrap\Coordinator::class)->reset();
+
 		\OC::$server->getEventLogger()->start('handle_request', 'Handle request');
 		$systemConfig = \OC::$server->getSystemConfig();
 

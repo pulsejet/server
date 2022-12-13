@@ -294,6 +294,12 @@ class TemplateLayout extends \OC_Template {
 		$this->assign('id-app-navigation', $renderAs === TemplateResponse::RENDER_AS_USER ? '#app-navigation' : null);
 	}
 
+	public static function reset() {
+		self::$versionHash = null;
+		self::$cssLocator = null;
+		self::$jsLocator = null;
+	}
+
 	/**
 	 * @param string $path
 	 * @param string $file

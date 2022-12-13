@@ -87,6 +87,10 @@ class Coordinator {
 		$this->logger = $logger;
 	}
 
+	public function reset(): void {
+		$this->bootedApps = [];
+	}
+
 	public function runInitialRegistration(): void {
 		$this->registerApps(OC_App::getEnabledApps());
 	}

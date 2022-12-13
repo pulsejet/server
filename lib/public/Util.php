@@ -68,6 +68,13 @@ class Util {
 	/** @var array */
 	private static $sortedScriptDeps = [];
 
+	public static function reset() {
+		self::$scripts = [];
+		self::$scriptDeps = [];
+		self::$sortedScriptDeps = [];
+		\OC_Util::reset();
+	}
+
 	/**
 	 * get the current installed version of Nextcloud
 	 * @return array

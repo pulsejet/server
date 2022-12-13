@@ -472,6 +472,8 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 
 		if ($this->offsetExists($name)) {
 			return parent::query($name);
+		} elseif (array_key_exists($name, $this->builders)) {
+			return parent::query($name);
 		} elseif ($this->appName === 'settings' && str_starts_with($name, 'OC\\Settings\\')) {
 			return parent::query($name);
 		} elseif ($this->appName === 'core' && str_starts_with($name, 'OC\\Core\\')) {

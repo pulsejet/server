@@ -160,7 +160,7 @@ class Router implements IRouter {
 		if (!isset($this->loadedApps['core'])) {
 			$this->loadedApps['core'] = true;
 			$this->useCollection('root');
-			require_once __DIR__ . '/../../../core/routes.php';
+			require __DIR__ . '/../../../core/routes.php';
 
 			// Also add the OCS collection
 			$collection = $this->getCollection('root.ocs');
@@ -402,7 +402,7 @@ class Router implements IRouter {
 	 * @param string $appName
 	 */
 	private function requireRouteFile($file, $appName) {
-		$this->setupRoutes(include_once $file, $appName);
+		$this->setupRoutes(include $file, $appName);
 	}
 
 

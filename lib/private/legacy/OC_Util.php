@@ -81,6 +81,12 @@ class OC_Util {
 	public static $styles = [];
 	public static $headers = [];
 
+	public static function reset() {
+		self::$scripts = [];
+		self::$styles = [];
+		self::$headers = [];
+	}
+
 	/** @var array Local cache of version.php */
 	private static $versionCache = null;
 

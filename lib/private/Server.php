@@ -1041,17 +1041,17 @@ class Server extends ServerContainer implements IServerContainer {
 				$stream = 'php://input';
 			}
 
+			$server = \ContextManager::get('_SERVER');
+
 			return new Request(
 				[
-					'get' => $_GET,
-					'post' => $_POST,
-					'files' => $_FILES,
-					'server' => $_SERVER,
-					'env' => $_ENV,
-					'cookies' => $_COOKIE,
-					'method' => (isset($_SERVER) && isset($_SERVER['REQUEST_METHOD']))
-						? $_SERVER['REQUEST_METHOD']
-						: '',
+					'get' => \ContextManager::get('_GET'),
+					'post' => \ContextManager::get('_POST'),
+					'files' => \ContextManager::get('_FILES'),
+					'server' => \ContextManager::get('_SERVER'),
+					'env' => \ContextManager::get('_ENV'),
+					'cookies' => \ContextManager::get('_COOKIE'),
+					'method' =>  ($server ? $server['REQUEST_METHOD'] : '') ?: '',
 					'urlParams' => $urlParams,
 				],
 				$this->get(IRequestId::class),
@@ -2370,6 +2370,6 @@ class Server extends ServerContainer implements IServerContainer {
 			}
 
 			return $container->get($target);
-		}, false);
+		}, false, true);
 	}
 }

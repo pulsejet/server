@@ -46,11 +46,7 @@ class Output implements IOutput {
 	 * @param string $out
 	 */
 	public function setOutput($out) {
-		if (\ContextManager::daemon()) {
-			\ContextManager::response()->end($out);
-		} else {
-			print($out);
-		}
+		print($out);
 	}
 
 	/**

@@ -72,7 +72,7 @@ class RouteConfig {
 		$this->routes = $routes;
 		$this->container = $container;
 		$this->router = $router;
-		$this->appName = $container['AppName'];
+		$this->appName = $container->get('AppName');
 	}
 
 	/**

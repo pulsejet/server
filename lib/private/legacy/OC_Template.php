@@ -96,6 +96,10 @@ class OC_Template extends \OC\Template\Base {
 		parent::__construct($template, $requestToken, $l10n, $themeDefaults);
 	}
 
+	public static function reset() {
+		self::$initTemplateEngineFirstRun = true;
+	}
+
 	/**
 	 * @param string $renderAs
 	 */
@@ -292,7 +296,7 @@ class OC_Template extends \OC\Template\Base {
 			$hint = '';
 		}
 
-		http_response_code($statusCode);
+		\ContextManager::http_response_code($statusCode);
 		try {
 			$content = new \OC_Template('', 'error', 'error', false);
 			$errors = [['error' => $error_msg, 'hint' => $hint]];
@@ -306,7 +310,7 @@ class OC_Template extends \OC\Template\Base {
 			header('Content-Type: text/plain; charset=utf-8');
 			print("$error_msg $hint");
 		}
-		die();
+		\ContextManager::die();
 	}
 
 	/**

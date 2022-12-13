@@ -138,7 +138,7 @@ class App {
 			$request = $container->get(IRequest::class);
 			$request->setUrlParameters($container['urlParams']);
 		}
-		$appName = $container['AppName'];
+		$appName = $container->get('AppName');
 
 		// first try $controllerName then go for \OCA\AppName\Controller\$controllerName
 		try {
@@ -161,7 +161,7 @@ class App {
 
 		// initialize the dispatcher and run all the middleware before the controller
 		/** @var Dispatcher $dispatcher */
-		$dispatcher = $container['Dispatcher'];
+		$dispatcher = $container->get('Dispatcher');
 
 		[
 			$httpHeaders,
@@ -171,7 +171,7 @@ class App {
 			$response
 		] = $dispatcher->dispatch($controller, $methodName);
 
-		$io = $container[IOutput::class];
+		$io = $container->get(IOutput::class);
 
 		if ($profiler->isEnabled()) {
 			/** @var EventLogger $eventLogger */

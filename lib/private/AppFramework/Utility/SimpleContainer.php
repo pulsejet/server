@@ -47,7 +47,10 @@ use function class_exists;
 class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 
 	/** @var Container */
-	private $container;
+	protected $container;
+
+	protected $statics = [];
+	public $builders = [];
 
 	public function __construct() {
 		$this->container = new Container();
@@ -68,7 +71,7 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 
 	public function has(string $id): bool {
 		// If a service is no registered but is an existing class, we can probably load it
-		return isset($this->container[$id]) || class_exists($id);
+		return isset($this->container[$id]) || array_key_exists($id, $this->builders) || class_exists($id);
 	}
 
 	/**
@@ -82,7 +85,7 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 			return $class->newInstance();
 		}
 
-		return $class->newInstanceArgs(array_map(function (ReflectionParameter $parameter) {
+		return $class->newInstanceArgs(array_map(function (ReflectionParameter $parameter) use ($class) {
 			$parameterType = $parameter->getType();
 
 			$resolveName = $parameter->getName();
@@ -101,6 +104,10 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 				if ($parameter->isDefaultValueAvailable()) {
 					return $parameter->getDefaultValue();
 				}
+
+				error_log('Could not resolve ' . $resolveName .
+						  ' while trying to build class ' . $class->getName() .
+						  ': ' . $e->getMessage());
 
 				if ($parameterType !== null && ($parameterType instanceof ReflectionNamedType) && !$parameterType->isBuiltin()) {
 					$resolveName = $parameter->getName();
@@ -134,8 +141,16 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 
 	public function query(string $name, bool $autoload = true) {
 		$name = $this->sanitizeName($name);
-		if (isset($this->container[$name])) {
-			return $this->container[$name];
+		$key = $this->key($name);
+
+		if (isset($this->container[$key])) {
+			return $this->container[$key];
+		}
+
+		if (isset($this->builders[$name])) {
+			$instance = $this->builders[$name]();
+			$this->container[$key] = $instance;
+			return $instance;
 		}
 
 		if ($autoload) {
@@ -147,6 +162,13 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 		}
 
 		throw new QueryException('Could not resolve ' . $name . '!');
+	}
+
+	public function key(string $name): string {
+		if (isset($this->statics[$name])) {
+			return $name;
+		}
+		return (string) \ContextManager::id() . '-' . $name;
 	}
 
 	/**
@@ -166,18 +188,28 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 	 * @param Closure $closure the closure to be called on service creation
 	 * @param bool $shared
 	 */
-	public function registerService($name, Closure $closure, $shared = true) {
+	public function registerService($name, Closure $closure, $shared = true, $static = false) {
 		$wrapped = function () use ($closure) {
 			return $closure($this);
 		};
 		$name = $this->sanitizeName($name);
-		if (isset($this[$name])) {
-			unset($this[$name]);
+
+		if ($static) {
+			$this->statics[$name] = true;
 		}
+		$key = $this->key($name);
+		if (isset($this[$key])) {
+			unset($this[$key]);
+		}
+
+		if (!$static && \ContextManager::id() === 0) {
+			$this->builders[$name] = $wrapped;
+		}
+
 		if ($shared) {
-			$this[$name] = $wrapped;
+			$this[$key] = $wrapped;
 		} else {
-			$this[$name] = $this->container->factory($wrapped);
+			$this[$key] = $this->container->factory($wrapped);
 		}
 	}
 
@@ -191,7 +223,7 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 	public function registerAlias($alias, $target) {
 		$this->registerService($alias, function (ContainerInterface $container) use ($target) {
 			return $container->get($target);
-		}, false);
+		}, false, true);
 	}
 
 	/*

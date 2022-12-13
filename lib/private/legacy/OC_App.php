@@ -80,6 +80,13 @@ class OC_App {
 	public const supportedApp = 300;
 	public const officialApp = 200;
 
+	public static function reset() {
+		self::$adminForms = [];
+		self::$personalForms = [];
+		self::$loadedApps = [];
+		self::$alreadyRegistered = [];
+	}
+
 	/**
 	 * clean the appId
 	 *
@@ -303,7 +310,7 @@ class OC_App {
 	 */
 	private static function requireAppFile(string $app) {
 		// encapsulated here to avoid variable scope conflicts
-		require_once $app . '/appinfo/app.php';
+		require $app . '/appinfo/app.php';
 	}
 
 	/**
