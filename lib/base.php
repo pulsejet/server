@@ -625,6 +625,7 @@ class OC {
 
 		// Register some global services
 		self::$server->setGlobal(\OC\User\Manager::class);
+		self::$server->setGlobal(IEventDispatcher::class);
 
 		// Override php.ini and log everything if we're troubleshooting
 		if (self::$config->getValue('loglevel') === ILogger::DEBUG) {
