@@ -59,6 +59,11 @@ class InitialStateService implements IInitialStateService {
 		$this->container = $container;
 	}
 
+	public function reset() {
+		$this->states = [];
+		$this->lazyStates = [];
+	}
+
 	public function provideInitialState(string $appName, string $key, $data): void {
 		// Scalars and JsonSerializable are fine
 		if (is_scalar($data) || $data instanceof \JsonSerializable || is_array($data)) {

@@ -626,6 +626,7 @@ class OC {
 		// Register some global services
 		self::$server->setGlobal(\OC\User\Manager::class);
 		self::$server->setGlobal(IEventDispatcher::class);
+		self::$server->setGlobal(\OC\InitialStateService::class);
 
 		// Override php.ini and log everything if we're troubleshooting
 		if (self::$config->getValue('loglevel') === ILogger::DEBUG) {
@@ -973,6 +974,7 @@ class OC {
 		\OC\TemplateLayout::reset();
 		\OCP\Util::reset();
 		\OC::$server->get(\OC\AppFramework\Bootstrap\Coordinator::class)->reset();
+		\OC::$server->get(\OC\InitialStateService::class)->reset();
 
 		\OC::$server->getEventLogger()->start('handle_request', 'Handle request');
 		$systemConfig = \OC::$server->getSystemConfig();
