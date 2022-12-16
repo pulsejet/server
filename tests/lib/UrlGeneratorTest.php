@@ -201,9 +201,9 @@ class UrlGeneratorTest extends \Test\TestCase {
 			->method('generate')
 			->willReturnCallback(function ($routeName, $parameters) {
 				if ($routeName === 'ocs.core.OCS.getCapabilities') {
-					return '/index.php/ocsapp/cloud/capabilities';
+					return '/index.php/ocs/v2.php/cloud/capabilities';
 				} elseif ($routeName === 'ocs.core.WhatsNew.dismiss') {
-					return '/index.php/ocsapp/core/whatsnew';
+					return '/index.php/ocs/v2.php/core/whatsnew';
 				}
 			});
 		$result = $this->urlGenerator->linkToOCSRouteAbsolute($route);

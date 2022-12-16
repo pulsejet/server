@@ -153,7 +153,7 @@ class Router implements IRouter {
 
 				// Also add the OCS collection
 				$collection = $this->getCollection($app.'.ocs');
-				$collection->addPrefix('/ocsapp');
+				$collection->addPrefix('/ocs/v2.php');
 				$this->root->addCollection($collection);
 			}
 		}
@@ -164,7 +164,7 @@ class Router implements IRouter {
 
 			// Also add the OCS collection
 			$collection = $this->getCollection('root.ocs');
-			$collection->addPrefix('/ocsapp');
+			$collection->addPrefix('/ocs/v2.php');
 			$this->root->addCollection($collection);
 		}
 		if ($this->loaded) {
@@ -240,7 +240,7 @@ class Router implements IRouter {
 			$app = \OC_App::cleanAppId($app);
 			\OC::$REQUESTEDAPP = $app;
 			$this->loadRoutes($app);
-		} elseif (substr($url, 0, 13) === '/ocsapp/apps/') {
+		} elseif (str_starts_with($url, '/ocs/v2.php/apps/')) {
 			// empty string / 'ocsapp' / 'apps' / $app / rest of the route
 			[, , , $app,] = explode('/', $url, 5);
 
@@ -425,7 +425,7 @@ class Router implements IRouter {
 			$ocsRoutes = $routeParser->parseOCSRoutes($routes, $appName);
 
 			$this->root->addCollection($defaultRoutes);
-			$ocsRoutes->addPrefix('/ocsapp');
+			$ocsRoutes->addPrefix('/ocs/v2.php');
 			$this->root->addCollection($ocsRoutes);
 		}
 	}
