@@ -57,11 +57,10 @@ function swooleSession($request, $response) {
 
 }
 
-Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 $http = new \Swoole\Http\Server('127.0.0.1', 9501);
 $http->set([
     'hook_flags' => SWOOLE_HOOK_ALL,
-    'enable_coroutine' => true,
+    'enable_coroutine' => false,
     'document_root' => __DIR__,
     'enable_static_handler' => true,
 
@@ -86,7 +85,10 @@ $http->on("WorkerStart", function($server, $workerId)
 $http->on('request', function ($request, $response) {
     $time = microtime(true);
 
-    ContextManager::set('__id', Co::getCid());
+    $counter = ContextManager::count();
+    $id = Co::getCid();
+    $id = $id !== -1 ? $id : $counter;
+    ContextManager::set('__id', $id);
 
     ContextManager::set('__RESPONSE', $response);
     ContextManager::set('__REQUEST', $request);

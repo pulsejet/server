@@ -968,7 +968,7 @@ class OC {
 	 * Handle the request
 	 */
 	public static function handleRequest($request) {
-		// Reset static classes
+		// Reset static and global classes
 		\OC_App::reset();
 		\OC_Template::reset();
 		\OC\TemplateLayout::reset();

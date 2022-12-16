@@ -1,7 +1,16 @@
 <?php
 
+const USES_COROUTINE = false;
+
 class ContextManager
 {
+    public static array $context = [];
+    public static int $counter = 0;
+
+    public static function count() {
+        return ++self::$counter;
+    }
+
     public static function daemon(): bool {
         return true;
     }
@@ -95,13 +104,20 @@ class ContextManager
     // Set is used to save a new value under the context
     public static function set(string $key, mixed $value)
     {
-        // Short method of setting a new context value, same as above code...
-        Co::getContext()[$key] = $value;
+        if (!USES_COROUTINE) {
+            self::$context[$key] = $value;
+        } else {
+            Co::getContext()[$key] = $value;
+        }
     }
 
     // Navigate the coroutine tree and search for the requested key
     public static function get(string $key, mixed $default = null): mixed
     {
+        if (!USES_COROUTINE) {
+            return self::$context[$key] ?? $default;
+        }
+
         // Get the current coroutine ID
         $cid = Co::getCid();
 
@@ -124,5 +140,13 @@ class ContextManager
 
         // The requested context variable and value could not be found
         return $default ?? null;
+    }
+
+    public function reset() {
+        if (!USES_COROUTINE) {
+            self::$context = [];
+        } else {
+            Co::getContext()->clear();
+        }
     }
 }
