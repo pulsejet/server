@@ -303,6 +303,13 @@ class Request implements \ArrayAccess, \Countable, IRequest {
 	 * @return string
 	 */
 	public function getHeader(string $name): string {
+		if (\ContextManager::request()) {
+			$header = \ContextManager::request()->header[strtolower($name)];
+			if ($header) {
+				return $header;
+			}
+		}
+
 		$name = strtoupper(str_replace('-', '_', $name));
 		if (isset($this->server['HTTP_' . $name])) {
 			return $this->server['HTTP_' . $name];
@@ -473,8 +480,8 @@ class Request implements \ArrayAccess, \Countable, IRequest {
 			$token = $this->items['get']['requesttoken'];
 		} elseif (isset($this->items['post']['requesttoken'])) {
 			$token = $this->items['post']['requesttoken'];
-		} elseif (isset($this->items['server']['HTTP_REQUESTTOKEN'])) {
-			$token = $this->items['server']['HTTP_REQUESTTOKEN'];
+		} elseif (null !== $this->getHeader('requesttoken')) {
+			$token = $this->getHeader('requesttoken');
 		} else {
 			//no token found.
 			return false;

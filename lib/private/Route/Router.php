@@ -241,8 +241,8 @@ class Router implements IRouter {
 			\OC::$REQUESTEDAPP = $app;
 			$this->loadRoutes($app);
 		} elseif (str_starts_with($url, '/ocs/v2.php/apps/')) {
-			// empty string / 'ocsapp' / 'apps' / $app / rest of the route
-			[, , , $app,] = explode('/', $url, 5);
+			// empty string / 'ocs' / 'v2.php' / 'apps' / $app / rest of the route
+			[, , , , $app,] = explode('/', $url, 6);
 
 			$app = \OC_App::cleanAppId($app);
 			\OC::$REQUESTEDAPP = $app;
