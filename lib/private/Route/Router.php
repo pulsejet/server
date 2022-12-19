@@ -233,7 +233,7 @@ class Router implements IRouter {
 	 * @return array
 	 */
 	public function findMatchingRoute(string $url): array {
-		if (substr($url, 0, 6) === '/apps/') {
+		if (str_starts_with($url, '/apps/')) {
 			// empty string / 'apps' / $app / rest of the route
 			[, , $app,] = explode('/', $url, 4);
 
@@ -247,9 +247,9 @@ class Router implements IRouter {
 			$app = \OC_App::cleanAppId($app);
 			\OC::$REQUESTEDAPP = $app;
 			$this->loadRoutes($app);
-		} elseif (substr($url, 0, 10) === '/settings/') {
+		} elseif (str_starts_with($url, '/settings/')) {
 			$this->loadRoutes('settings');
-		} elseif (substr($url, 0, 6) === '/core/') {
+		} elseif (str_starts_with($url, '/core/')) {
 			\OC::$REQUESTEDAPP = $url;
 			if (!\OC::$server->getConfig()->getSystemValueBool('maintenance') && !Util::needUpgrade()) {
 				\OC_App::loadApps();
