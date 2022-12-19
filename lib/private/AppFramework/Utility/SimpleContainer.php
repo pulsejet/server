@@ -191,6 +191,15 @@ class SimpleContainer implements ArrayAccess, ContainerInterface, IContainer {
 	}
 
 	public function query(string $name, bool $autoload = true) {
+		if (\ContextManager::id() === 0 && isset($this->factories[$name])) {
+			// if (str_contains($name, 'Session')) {
+			// 	error_log('WARNING: Instantiating a non-persistent service (' . $name . ') in the global container.');
+			// 	ob_start();
+			// 	debug_print_backtrace();
+			// 	error_log(ob_get_clean());
+			// }
+		}
+
 		$name = $this->sanitizeName($name);
 
 		// Look for a superglobal object
