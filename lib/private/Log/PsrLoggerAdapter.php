@@ -79,7 +79,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function alert($message, array $context = []) {
+	public function alert($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -103,7 +103,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function critical($message, array $context = []) {
+	public function critical($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -126,7 +126,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function error($message, array $context = []) {
+	public function error($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -151,7 +151,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function warning($message, array $context = []) {
+	public function warning($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -173,7 +173,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function notice($message, array $context = []) {
+	public function notice($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -197,7 +197,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function info($message, array $context = []) {
+	public function info($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -219,7 +219,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @return void
 	 */
-	public function debug($message, array $context = []) {
+	public function debug($message, array $context = []): void {
 		if ($this->containsThrowable($context)) {
 			$this->logger->logException($context['exception'], array_merge(
 				[
@@ -244,7 +244,7 @@ final class PsrLoggerAdapter implements LoggerInterface, IDataLogger {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function log($level, $message, array $context = []) {
+	public function log($level, $message, array $context = []): void {
 		if (!is_int($level) || $level < ILogger::DEBUG || $level > ILogger::FATAL) {
 			throw new InvalidArgumentException('Nextcloud allows only integer log levels');
 		}
